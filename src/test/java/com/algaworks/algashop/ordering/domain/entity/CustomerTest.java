@@ -83,8 +83,12 @@ class CustomerTest {
       active,
       createdAt
     );
+
     customer.archive();
+
     Assertions.assertWith((customer),
+      c -> assertThat(c.isArchived()).isTrue(),
+      c -> assertThat(c.archivedAt()).isNotNull(),
       c -> assertThat(c.fullName()).isEqualTo("Anonymous"),
       c -> assertThat(c.email()).isNotEqualTo("jhon@mail.com"),
       c -> assertThat(c.phone()).isEqualTo("000-000-0000"),
