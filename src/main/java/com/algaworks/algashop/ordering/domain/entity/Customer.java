@@ -60,7 +60,9 @@ public class Customer {
     this.setLoyaltyPoints(points);
   }
 
-  public void archive() { }
+  public void archive() {
+
+  }
 
   public void enablePromotionNotifications() {
     this.setPromotionNotificationsAllowed(true);

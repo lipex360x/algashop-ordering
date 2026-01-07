@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
 class CustomerTest {
 
   @Test
@@ -20,7 +23,7 @@ class CustomerTest {
     var active = false;
     var createdAt = OffsetDateTime.now();
 
-    Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
+    assertThatExceptionOfType(IllegalArgumentException.class)
       .isThrownBy(() -> new Customer(
         id,
         name,
@@ -55,7 +58,38 @@ class CustomerTest {
       createdAt
     );
 
-    Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
+    assertThatExceptionOfType(IllegalArgumentException.class)
       .isThrownBy(() -> customer.changeEmail("invalid-email"));
+  }
+
+  @Test
+  void given_unarchivedCustomer_whenArchive_shouldAnonymize() {
+    var id = IdGenerator.generateUUID();
+    var name = "John Doe";
+    var birthDate = LocalDate.of(1990, 1, 1);
+    var email = "jhon@mail.com";
+    var phone = "456-7894-1234";
+    var document = "255-441-456";
+    var active = false;
+    var createdAt = OffsetDateTime.now();
+
+    Customer customer = new Customer(
+      id,
+      name,
+      birthDate,
+      email,
+      phone,
+      document,
+      active,
+      createdAt
+    );
+    customer.archive();
+    Assertions.assertWith((customer),
+      c -> assertThat(c.fullName()).isEqualTo("Anonymous"),
+      c -> assertThat(c.email()).isNotEqualTo("jhon@mail.com"),
+      c -> assertThat(c.phone()).isEqualTo("000-000-0000"),
+      c -> assertThat(c.document()).isEqualTo("000-00-0000"),
+      c -> assertThat(c.birthDate()).isNull()
+    );
   }
 }
