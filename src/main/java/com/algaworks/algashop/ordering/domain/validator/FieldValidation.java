@@ -1,8 +1,14 @@
 package com.algaworks.algashop.ordering.domain.validator;
 
+import com.algaworks.algashop.ordering.domain.valueobject.FullName;
 import org.apache.commons.validator.routines.EmailValidator;
 
+import java.time.LocalDate;
 import java.util.Objects;
+
+import static com.algaworks.algashop.ordering.domain.exception.ErrorMessages.VALIDATION_ERROR_BIRTHDATE_MUST_IN_PAST;
+import static com.algaworks.algashop.ordering.domain.exception.ErrorMessages.VALIDATION_ERROR_FULLNAME_IS_BLANK;
+import static com.algaworks.algashop.ordering.domain.exception.ErrorMessages.VALIDATION_ERROR_FULLNAME_IS_NULL;
 
 public class FieldValidation {
 
@@ -16,6 +22,14 @@ public class FieldValidation {
     Objects.requireNonNull(email, errorMessage);
     if (email.isBlank()) throw new IllegalArgumentException(errorMessage);
     if (!EmailValidator.getInstance().isValid(email)) throw new IllegalArgumentException(errorMessage);
+  }
+
+  public static void requiresValidFullName(FullName fullName) {
+    Objects.requireNonNull(fullName, VALIDATION_ERROR_FULLNAME_IS_NULL);
+  }
+
+  public static void requiresValidBirthDate(LocalDate birthDate) {
+    if (birthDate.isAfter(LocalDate.now())) throw new IllegalArgumentException(VALIDATION_ERROR_BIRTHDATE_MUST_IN_PAST);
   }
 
 }

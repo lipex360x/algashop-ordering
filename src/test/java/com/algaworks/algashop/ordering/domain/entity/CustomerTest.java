@@ -1,7 +1,9 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.exception.CustomerArchivedException;
-import com.algaworks.algashop.ordering.domain.utility.IdGenerator;
+import com.algaworks.algashop.ordering.domain.valueobject.CustomerId;
+import com.algaworks.algashop.ordering.domain.valueobject.FullName;
+import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -15,8 +17,8 @@ class CustomerTest {
 
   @Test
   void given_invalidEmail_whenTryCreateCustomer_shouldGenerateException() {
-    var id = IdGenerator.generateUUID();
-    var name = "John Doe";
+    var id = new CustomerId();
+    var name = new FullName("John", "Doe");
     var birthDate = LocalDate.of(1990, 1, 1);
     var invalidEmail = "invalid-email";
     var phone = "456-7894-1234";
@@ -39,10 +41,10 @@ class CustomerTest {
 
   @Test
   void given_invalidEmail_whenTryUpdateCustomerEmail_shouldGenerateException() {
-    var id = IdGenerator.generateUUID();
-    var name = "John Doe";
+    var id = new CustomerId();
+    var name = new FullName("John", "Doe");
     var birthDate = LocalDate.of(1990, 1, 1);
-    var email = "jhon@mail.com";
+    var email = "mail@mail.com";
     var phone = "456-7894-1234";
     var document = "255-441-456";
     var active = false;
@@ -65,8 +67,8 @@ class CustomerTest {
 
   @Test
   void given_unarchivedCustomer_whenArchive_shouldAnonymize() {
-    var id = IdGenerator.generateUUID();
-    var name = "John Doe";
+    var id = new CustomerId();
+    var name = new FullName("John", "Doe");
     var birthDate = LocalDate.of(1990, 1, 1);
     var email = "jhon@mail.com";
     var phone = "456-7894-1234";
@@ -90,7 +92,7 @@ class CustomerTest {
     Assertions.assertWith((customer),
       c -> assertThat(c.isArchived()).isTrue(),
       c -> assertThat(c.archivedAt()).isNotNull(),
-      c -> assertThat(c.fullName()).isEqualTo("Anonymous"),
+      c -> assertThat(c.fullName()).isEqualTo(new FullName("Anonymous", "Anonymous")),
       c -> assertThat(c.email()).isNotEqualTo("jhon@mail.com"),
       c -> assertThat(c.phone()).isEqualTo("000-000-0000"),
       c -> assertThat(c.document()).isEqualTo("000-00-0000"),
@@ -101,8 +103,8 @@ class CustomerTest {
 
   @Test
   void given_archivedCustomer_whenTryUpdate_shouldGenerateException() {
-    var id = IdGenerator.generateUUID();
-    var name = "John Doe";
+    var id = new CustomerId();
+    var name = new FullName("John", "Doe");
     var birthDate = LocalDate.of(1990, 1, 1);
     var email = "jhon@mail.com";
     var phone = "456-7894-1234";
@@ -133,20 +135,19 @@ class CustomerTest {
       .isThrownBy(customer::disablePromotionNotifications);
 
     assertThatExceptionOfType(CustomerArchivedException.class)
-      .isThrownBy(() -> customer.changeName("Doe"));
+      .isThrownBy(() -> customer.changeName(new FullName("John", "Arbas")));
 
     assertThatExceptionOfType(CustomerArchivedException.class)
       .isThrownBy(() -> customer.changeEmail("doe@mail.com"));
 
     assertThatExceptionOfType(CustomerArchivedException.class)
       .isThrownBy(() -> customer.changePhone("111-222-3333"));
-
   }
 
   @Test
   void given_brandNewCustomer_whenAddLoyaltyPoints_shouldSumPoints() {
-    var id = IdGenerator.generateUUID();
-    var name = "John Doe";
+    var id = new CustomerId();
+    var name = new FullName("John", "Doe");
     var birthDate = LocalDate.of(1990, 1, 1);
     var email = "jhon@mail.com";
     var phone = "456-7894-1234";
@@ -165,18 +166,17 @@ class CustomerTest {
       createdAt
     );
 
-    customer.addLoyaltyPoints(10);
-    assertThat(customer.loyaltyPoints()).isEqualTo(10);
-    customer.addLoyaltyPoints(10);
-    customer.addLoyaltyPoints(10);
-    assertThat(customer.loyaltyPoints()).isEqualTo(30);
-
+    customer.addLoyaltyPoints(new LoyaltyPoints(10));
+    assertThat(customer.loyaltyPoints()).isEqualTo(new LoyaltyPoints(10));
+    customer.addLoyaltyPoints(new LoyaltyPoints(10));
+    customer.addLoyaltyPoints(new LoyaltyPoints(10));
+    assertThat(customer.loyaltyPoints()).isEqualTo(new LoyaltyPoints(30));
   }
 
   @Test
   void given_brandNewCustomer_whenAddInvalidLoyaltyPoints_shouldGenerateException() {
-    var id = IdGenerator.generateUUID();
-    var name = "John Doe";
+    var id = new CustomerId();
+    var name = new FullName("John", "Doe");
     var birthDate = LocalDate.of(1990, 1, 1);
     var email = "jhon@mail.com";
     var phone = "456-7894-1234";
@@ -195,10 +195,11 @@ class CustomerTest {
       createdAt
     );
 
-    assertThatExceptionOfType(IllegalArgumentException.class)
-      .isThrownBy(() -> customer.addLoyaltyPoints(0));
 
     assertThatExceptionOfType(IllegalArgumentException.class)
-      .isThrownBy(() -> customer.addLoyaltyPoints(-10));
+      .isThrownBy(() -> customer.addLoyaltyPoints(new LoyaltyPoints(0)));
+
+    assertThatExceptionOfType(IllegalArgumentException.class)
+      .isThrownBy(() -> customer.addLoyaltyPoints(new LoyaltyPoints(-10)));
   }
 }
