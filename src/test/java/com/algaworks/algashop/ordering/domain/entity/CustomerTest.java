@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
+import com.algaworks.algashop.ordering.domain.exception.CustomerArchivedException;
 import com.algaworks.algashop.ordering.domain.utility.IdGenerator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -93,7 +94,52 @@ class CustomerTest {
       c -> assertThat(c.email()).isNotEqualTo("jhon@mail.com"),
       c -> assertThat(c.phone()).isEqualTo("000-000-0000"),
       c -> assertThat(c.document()).isEqualTo("000-00-0000"),
+      c -> assertThat(c.isPromotionNotificationsAllowed()).isFalse(),
       c -> assertThat(c.birthDate()).isNull()
     );
+  }
+
+  @Test
+  void given_archivedCustomer_whenTryUpdate_shouldGenerateException() {
+    var id = IdGenerator.generateUUID();
+    var name = "John Doe";
+    var birthDate = LocalDate.of(1990, 1, 1);
+    var email = "jhon@mail.com";
+    var phone = "456-7894-1234";
+    var document = "255-441-456";
+    var active = false;
+    var createdAt = OffsetDateTime.now();
+
+    Customer customer = new Customer(
+      id,
+      name,
+      birthDate,
+      email,
+      phone,
+      document,
+      active,
+      createdAt
+    );
+
+    customer.archive();
+
+    assertThatExceptionOfType(CustomerArchivedException.class)
+      .isThrownBy(customer::archive);
+
+    assertThatExceptionOfType(CustomerArchivedException.class)
+      .isThrownBy(customer::enablePromotionNotifications);
+
+    assertThatExceptionOfType(CustomerArchivedException.class)
+      .isThrownBy(customer::disablePromotionNotifications);
+
+    assertThatExceptionOfType(CustomerArchivedException.class)
+      .isThrownBy(() -> customer.changeName("Doe"));
+
+    assertThatExceptionOfType(CustomerArchivedException.class)
+      .isThrownBy(() -> customer.changeEmail("doe@mail.com"));
+
+    assertThatExceptionOfType(CustomerArchivedException.class)
+      .isThrownBy(() -> customer.changePhone("111-222-3333"));
+
   }
 }

@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
+import com.algaworks.algashop.ordering.domain.exception.CustomerArchivedException;
 import com.algaworks.algashop.ordering.domain.validator.FieldValidation;
 
 import java.time.LocalDate;
@@ -57,10 +58,12 @@ public class Customer {
   }
 
   public void addLoyaltyPoints(Integer points) {
+    verifyIfChangeable();
     this.setLoyaltyPoints(points);
   }
 
   public void archive() {
+    verifyIfChangeable();
     this.setArchived(true);
     this.setArchivedAt(OffsetDateTime.now());
     this.setFullName("Anonymous");
@@ -68,25 +71,31 @@ public class Customer {
     this.setDocument("000-00-0000");
     this.setEmail(UUID.randomUUID() + "@anonymous.com");
     this.setBirthDate(null);
+    this.setPromotionNotificationsAllowed(false);
   }
 
   public void enablePromotionNotifications() {
+    verifyIfChangeable();
     this.setPromotionNotificationsAllowed(true);
   }
 
   public void disablePromotionNotifications() {
+    verifyIfChangeable();
     this.setPromotionNotificationsAllowed(false);
   }
 
   public void changeName(String fullName) {
+    verifyIfChangeable();
     this.setFullName(fullName);
   }
 
   public void changeEmail(String email) {
+    verifyIfChangeable();
     this.setEmail(email);
   }
 
   public void changePhone(String phone) {
+    verifyIfChangeable();
     this.setPhone(phone);
   }
 
@@ -191,6 +200,10 @@ public class Customer {
   private void setPhone(String phone) {
     Objects.requireNonNull(phone);
     this.phone = phone;
+  }
+
+  private void verifyIfChangeable() {
+    if (Boolean.TRUE.equals(this.isArchived())) throw new CustomerArchivedException();
   }
 
   @Override
