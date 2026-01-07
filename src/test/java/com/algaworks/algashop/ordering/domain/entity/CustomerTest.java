@@ -142,4 +142,63 @@ class CustomerTest {
       .isThrownBy(() -> customer.changePhone("111-222-3333"));
 
   }
+
+  @Test
+  void given_brandNewCustomer_whenAddLoyaltyPoints_shouldSumPoints() {
+    var id = IdGenerator.generateUUID();
+    var name = "John Doe";
+    var birthDate = LocalDate.of(1990, 1, 1);
+    var email = "jhon@mail.com";
+    var phone = "456-7894-1234";
+    var document = "255-441-456";
+    var active = false;
+    var createdAt = OffsetDateTime.now();
+
+    Customer customer = new Customer(
+      id,
+      name,
+      birthDate,
+      email,
+      phone,
+      document,
+      active,
+      createdAt
+    );
+
+    customer.addLoyaltyPoints(10);
+    assertThat(customer.loyaltyPoints()).isEqualTo(10);
+    customer.addLoyaltyPoints(10);
+    customer.addLoyaltyPoints(10);
+    assertThat(customer.loyaltyPoints()).isEqualTo(30);
+
+  }
+
+  @Test
+  void given_brandNewCustomer_whenAddInvalidLoyaltyPoints_shouldGenerateException() {
+    var id = IdGenerator.generateUUID();
+    var name = "John Doe";
+    var birthDate = LocalDate.of(1990, 1, 1);
+    var email = "jhon@mail.com";
+    var phone = "456-7894-1234";
+    var document = "255-441-456";
+    var active = false;
+    var createdAt = OffsetDateTime.now();
+
+    Customer customer = new Customer(
+      id,
+      name,
+      birthDate,
+      email,
+      phone,
+      document,
+      active,
+      createdAt
+    );
+
+    assertThatExceptionOfType(IllegalArgumentException.class)
+      .isThrownBy(() -> customer.addLoyaltyPoints(0));
+
+    assertThatExceptionOfType(IllegalArgumentException.class)
+      .isThrownBy(() -> customer.addLoyaltyPoints(-10));
+  }
 }
