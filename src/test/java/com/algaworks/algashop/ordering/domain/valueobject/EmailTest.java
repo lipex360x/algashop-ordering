@@ -1,8 +1,8 @@
 package com.algaworks.algashop.ordering.domain.valueobject;
 
+import com.algaworks.algashop.ordering.domain.exception.ErrorMessages;
 import org.junit.jupiter.api.Test;
 
-import static com.algaworks.algashop.ordering.domain.exception.ErrorMessages.VALIDATION_ERROR_EMAIL_IS_INVALID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -12,21 +12,21 @@ class EmailTest {
   void shouldThrowExceptionForNullValue() {
     assertThatExceptionOfType(NullPointerException.class)
       .isThrownBy(() -> new Email(null))
-      .withMessage(VALIDATION_ERROR_EMAIL_IS_INVALID);
+      .withMessage(ErrorMessages.VALIDATION_ERROR_EMAIL_IS_INVALID);
   }
 
   @Test
   void shouldThrowExceptionForBlankValue() {
     assertThatExceptionOfType(IllegalArgumentException.class)
       .isThrownBy(() -> new Email(""))
-      .withMessage(VALIDATION_ERROR_EMAIL_IS_INVALID);
+      .withMessage(ErrorMessages.VALIDATION_ERROR_EMAIL_IS_INVALID);
   }
 
   @Test
   void shouldThrowExceptionForInvalidEmailFormat() {
     assertThatExceptionOfType(IllegalArgumentException.class)
       .isThrownBy(() -> new Email("invalid-email-format"))
-      .withMessage(VALIDATION_ERROR_EMAIL_IS_INVALID);
+      .withMessage(ErrorMessages.VALIDATION_ERROR_EMAIL_IS_INVALID);
   }
 
   @Test

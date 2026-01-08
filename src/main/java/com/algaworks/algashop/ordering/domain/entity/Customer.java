@@ -7,6 +7,7 @@ import com.algaworks.algashop.ordering.domain.valueobject.Document;
 import com.algaworks.algashop.ordering.domain.valueobject.Email;
 import com.algaworks.algashop.ordering.domain.valueobject.FullName;
 import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
+import com.algaworks.algashop.ordering.domain.valueobject.Phone;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
@@ -19,7 +20,7 @@ public class Customer {
   private FullName fullName;
   private BirthDate birthDate;
   private Email email;
-  private String phone;
+  private Phone phone;
   private Document document;
   private Boolean promotionNotificationsAllowed;
   private Boolean archived;
@@ -29,7 +30,7 @@ public class Customer {
 
 
   public Customer(CustomerId id, FullName fullName, BirthDate birthDate, Email email,
-                  String phone, Document document, Boolean promotionNotificationsAllowed,
+                  Phone phone, Document document, Boolean promotionNotificationsAllowed,
                   OffsetDateTime registeredAt) {
     this.setId(id);
     this.setFullName(fullName);
@@ -44,7 +45,7 @@ public class Customer {
   }
 
   public Customer(CustomerId id, FullName fullName, BirthDate birthDate,
-                  Email email, String phone, Document document,
+                  Email email, Phone phone, Document document,
                   Boolean promotionNotificationsAllowed, Boolean archived,
                   OffsetDateTime registeredAt, OffsetDateTime archivedAt,
                   LoyaltyPoints loyaltyPoints) {
@@ -71,7 +72,7 @@ public class Customer {
     this.setArchived(true);
     this.setArchivedAt(OffsetDateTime.now());
     this.setFullName(new FullName("Anonymous", "Anonymous"));
-    this.setPhone("000-000-0000");
+    this.setPhone(new Phone("000-000-0000"));
     this.setDocument(new Document("000-00-0000"));
     this.setEmail(new Email(UUID.randomUUID() + "@anonymous.com"));
     this.setBirthDate(null);
@@ -98,7 +99,7 @@ public class Customer {
     this.setEmail(email);
   }
 
-  public void changePhone(String phone) {
+  public void changePhone(Phone phone) {
     verifyIfChangeable();
     this.setPhone(phone);
   }
@@ -119,7 +120,7 @@ public class Customer {
     return email;
   }
 
-  public String phone() {
+  public Phone phone() {
     return phone;
   }
 
@@ -153,7 +154,7 @@ public class Customer {
   }
 
   private void setFullName(FullName fullName) {
-    Objects.requireNonNull(fullName, VALIDATION_ERROR_FULLNAME_IS_NULL);
+    Objects.requireNonNull(fullName, VALIDATION_ERROR_FULL_NAME_IS_NULL);
     this.fullName = fullName;
   }
 
@@ -194,8 +195,8 @@ public class Customer {
     this.document = document;
   }
 
-  private void setPhone(String phone) {
-    Objects.requireNonNull(phone);
+  private void setPhone(Phone phone) {
+    Objects.requireNonNull(phone, VALIDATION_ERROR_PHONE_IS_NULL);
     this.phone = phone;
   }
 

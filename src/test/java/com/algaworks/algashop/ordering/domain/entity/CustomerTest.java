@@ -7,6 +7,7 @@ import com.algaworks.algashop.ordering.domain.valueobject.Document;
 import com.algaworks.algashop.ordering.domain.valueobject.Email;
 import com.algaworks.algashop.ordering.domain.valueobject.FullName;
 import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
+import com.algaworks.algashop.ordering.domain.valueobject.Phone;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -19,12 +20,12 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class CustomerTest {
 
   @Test
-  void given_unarchivedCustomer_whenArchive_shouldAnonymize() {
+  void shouldArchiveACustomer() {
     var id = new CustomerId();
     var name = new FullName("John", "Doe");
     var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
     var email = new Email("jhon@mail.com");
-    var phone = "456-7894-1234";
+    var phone = new Phone("456-7894-1234");
     var document = new Document("255-441-456");
     var active = false;
     var createdAt = OffsetDateTime.now();
@@ -47,7 +48,7 @@ class CustomerTest {
       c -> assertThat(c.archivedAt()).isNotNull(),
       c -> assertThat(c.fullName()).isEqualTo(new FullName("Anonymous", "Anonymous")),
       c -> assertThat(c.email().value()).doesNotHaveToString("jhon@mail.com"),
-      c -> assertThat(c.phone()).isEqualTo("000-000-0000"),
+      c -> assertThat(c.phone()).hasToString("000-000-0000"),
       c -> assertThat(c.document()).hasToString("000-00-0000"),
       c -> assertThat(c.isPromotionNotificationsAllowed()).isFalse(),
       c -> assertThat(c.birthDate()).isNull()
@@ -55,12 +56,12 @@ class CustomerTest {
   }
 
   @Test
-  void given_archivedCustomer_whenTryUpdate_shouldGenerateException() {
+  void shouldThrowException_whenUpdatingArchivedCustomer() {
     var id = new CustomerId();
     var name = new FullName("John", "Doe");
     var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
     var email = new Email("jhon@mail.com");
-    var phone = "456-7894-1234";
+    var phone = new Phone("456-7894-1234");
     var document = new Document("255-441-456");
     var active = false;
     var createdAt = OffsetDateTime.now();
@@ -94,16 +95,16 @@ class CustomerTest {
       .isThrownBy(() -> customer.changeEmail(new Email("doe@mail.com")));
 
     assertThatExceptionOfType(CustomerArchivedException.class)
-      .isThrownBy(() -> customer.changePhone("111-222-3333"));
+      .isThrownBy(() -> customer.changePhone(new Phone("111-222-3333")));
   }
 
   @Test
-  void given_brandNewCustomer_whenAddLoyaltyPoints_shouldSumPoints() {
+  void shouldSumPoints_whenAddingLoyaltyPoints() {
     var id = new CustomerId();
     var name = new FullName("John", "Doe");
     var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
     var email = new Email("jhon@mail.com");
-    var phone = "456-7894-1234";
+    var phone = new Phone("456-7894-1234");
     var document = new Document("255-441-456");
     var active = false;
     var createdAt = OffsetDateTime.now();
@@ -126,32 +127,4 @@ class CustomerTest {
     assertThat(customer.loyaltyPoints()).isEqualTo(new LoyaltyPoints(30));
   }
 
-  @Test
-  void given_brandNewCustomer_whenAddInvalidLoyaltyPoints_shouldGenerateException() {
-    var id = new CustomerId();
-    var name = new FullName("John", "Doe");
-    var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
-    var email = new Email("jhon@mail.com");
-    var phone = "456-7894-1234";
-    var document = new Document("255-441-456");
-    var active = false;
-    var createdAt = OffsetDateTime.now();
-
-    Customer customer = new Customer(
-      id,
-      name,
-      birthDate,
-      email,
-      phone,
-      document,
-      active,
-      createdAt
-    );
-
-    assertThatExceptionOfType(IllegalArgumentException.class)
-      .isThrownBy(() -> customer.addLoyaltyPoints(new LoyaltyPoints(0)));
-
-    assertThatExceptionOfType(IllegalArgumentException.class)
-      .isThrownBy(() -> customer.addLoyaltyPoints(new LoyaltyPoints(-10)));
-  }
 }

@@ -6,32 +6,31 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-class DocumentTest {
+class PhoneTest {
 
   @Test
   void shouldThrowExceptionForNullValue() {
     assertThatExceptionOfType(NullPointerException.class)
-      .isThrownBy(() -> new Document(null))
-      .withMessage(ErrorMessages.VALIDATION_ERROR_DOCUMENT_IS_NULL);
+      .isThrownBy(() -> new Phone(null))
+      .withMessage(ErrorMessages.VALIDATION_ERROR_PHONE_IS_NULL);
   }
 
   @Test
   void shouldThrowExceptionForBlankValue() {
     assertThatExceptionOfType(IllegalArgumentException.class)
-      .isThrownBy(() -> new Document(""))
-      .withMessage(ErrorMessages.VALIDATION_ERROR_DOCUMENT_IS_BLANK);;
+      .isThrownBy(() -> new Phone(""))
+      .withMessage(ErrorMessages.VALIDATION_ERROR_PHONE_IS_BLANK);
   }
 
   @Test
-  void shouldCreateDocument() {
-    Document document = new Document("000-00-0000");
-    assertThat(document.value()).hasToString("000-00-0000");
+  void shouldCreatePhone() {
+    Phone phone = new Phone("333-333-3333");
+    assertThat(phone.value()).hasToString("333-333-3333");
   }
 
   @Test
   void shouldReturnToStringCorrectly() {
-    Document document = new Document("000-00-0000");
-    assertThat(document.toString()).hasToString("000-00-0000");
+    Phone phone = new Phone("333-333-3333");
+    assertThat(phone.toString()).hasToString("333-333-3333");
   }
-
 }

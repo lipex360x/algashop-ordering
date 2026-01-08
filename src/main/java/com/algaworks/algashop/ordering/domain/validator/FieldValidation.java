@@ -1,7 +1,5 @@
 package com.algaworks.algashop.ordering.domain.validator;
 
-import org.apache.commons.validator.routines.EmailValidator;
-
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -12,7 +10,7 @@ public class FieldValidation {
   private FieldValidation() {}
 
   public static void requiresDateInPast(LocalDate date) {
-    requiresDateInPast(date, VALIDATION_ERROR_BIRTHDATE_MUST_IN_PAST);
+    requiresDateInPast(date, VALIDATION_ERROR_BIRTHDATE_IS_IN_THE_FUTURE);
   }
 
   public static void requiresDateInPast(LocalDate date, String errorMessage) {

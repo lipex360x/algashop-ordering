@@ -1,21 +1,20 @@
 package com.algaworks.algashop.ordering.domain.valueobject;
 
+import com.algaworks.algashop.ordering.domain.exception.ErrorMessages;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static com.algaworks.algashop.ordering.domain.exception.ErrorMessages.VALIDATION_ERROR_BIRTHDATE_IS_NULL;
-import static com.algaworks.algashop.ordering.domain.exception.ErrorMessages.VALIDATION_ERROR_BIRTHDATE_MUST_IN_PAST;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 class BirthDateTest {
 
   @Test
-  void shouldThrowExceptionForNullDate() {
+  void shouldThrowExceptionForNullValue() {
     assertThatExceptionOfType(NullPointerException.class)
       .isThrownBy(() -> new BirthDate(null))
-      .withMessage(VALIDATION_ERROR_BIRTHDATE_IS_NULL);
+      .withMessage(ErrorMessages.VALIDATION_ERROR_BIRTHDATE_IS_NULL);
   }
 
   @Test
@@ -23,7 +22,7 @@ class BirthDateTest {
     LocalDate futureDate = LocalDate.now().plusDays(1);
     assertThatExceptionOfType(IllegalArgumentException.class)
       .isThrownBy(() -> new BirthDate(futureDate))
-      .withMessage(VALIDATION_ERROR_BIRTHDATE_MUST_IN_PAST);
+      .withMessage(ErrorMessages.VALIDATION_ERROR_BIRTHDATE_IS_IN_THE_FUTURE);
   }
 
   @Test
