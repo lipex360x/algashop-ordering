@@ -1,6 +1,7 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.exception.CustomerArchivedException;
+import com.algaworks.algashop.ordering.domain.valueobject.Address;
 import com.algaworks.algashop.ordering.domain.valueobject.BirthDate;
 import com.algaworks.algashop.ordering.domain.valueobject.CustomerId;
 import com.algaworks.algashop.ordering.domain.valueobject.Document;
@@ -8,16 +9,20 @@ import com.algaworks.algashop.ordering.domain.valueobject.Email;
 import com.algaworks.algashop.ordering.domain.valueobject.FullName;
 import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
 import com.algaworks.algashop.ordering.domain.valueobject.Phone;
+import com.algaworks.algashop.ordering.domain.valueobject.ZipCode;
+import net.datafaker.Faker;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 class CustomerTest {
+  Faker faker = new Faker(Locale.US);
 
   @Test
   void shouldArchiveACustomer() {
@@ -29,6 +34,14 @@ class CustomerTest {
     var document = new Document("255-441-456");
     var active = false;
     var createdAt = OffsetDateTime.now();
+    var address = Address.builder()
+      .number(faker.address().streetAddressNumber())
+      .street(faker.address().streetAddress())
+      .neighborhood(faker.address().secondaryAddress())
+      .city(faker.address().cityName())
+      .state(faker.address().state())
+      .zipCode(new ZipCode(faker.address().zipCode()))
+      .build();
 
     Customer customer = new Customer(
       id,
@@ -38,7 +51,8 @@ class CustomerTest {
       phone,
       document,
       active,
-      createdAt
+      createdAt,
+      address
     );
 
     customer.archive();
@@ -51,7 +65,9 @@ class CustomerTest {
       c -> assertThat(c.phone()).hasToString("000-000-0000"),
       c -> assertThat(c.document()).hasToString("000-00-0000"),
       c -> assertThat(c.isPromotionNotificationsAllowed()).isFalse(),
-      c -> assertThat(c.birthDate()).isNull()
+      c -> assertThat(c.birthDate()).isNull(),
+      c -> assertThat(c.address().number()).hasToString("Anon"),
+      c -> assertThat(c.address().complement()).isNull()
     );
   }
 
@@ -65,6 +81,14 @@ class CustomerTest {
     var document = new Document("255-441-456");
     var active = false;
     var createdAt = OffsetDateTime.now();
+    var address = Address.builder()
+      .number(faker.address().streetAddressNumber())
+      .street(faker.address().streetAddress())
+      .neighborhood(faker.address().secondaryAddress())
+      .city(faker.address().cityName())
+      .state(faker.address().state())
+      .zipCode(new ZipCode(faker.address().zipCode()))
+      .build();
 
     Customer customer = new Customer(
       id,
@@ -74,7 +98,8 @@ class CustomerTest {
       phone,
       document,
       active,
-      createdAt
+      createdAt,
+      address
     );
 
     customer.archive();
@@ -108,6 +133,14 @@ class CustomerTest {
     var document = new Document("255-441-456");
     var active = false;
     var createdAt = OffsetDateTime.now();
+    var address = Address.builder()
+      .number(faker.address().streetAddressNumber())
+      .street(faker.address().streetAddress())
+      .neighborhood(faker.address().secondaryAddress())
+      .city(faker.address().cityName())
+      .state(faker.address().state())
+      .zipCode(new ZipCode(faker.address().zipCode()))
+      .build();
 
     Customer customer = new Customer(
       id,
@@ -117,7 +150,8 @@ class CustomerTest {
       phone,
       document,
       active,
-      createdAt
+      createdAt,
+      address
     );
 
     customer.addLoyaltyPoints(new LoyaltyPoints(10));

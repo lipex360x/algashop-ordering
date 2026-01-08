@@ -9,6 +9,15 @@ public class FieldValidation {
 
   private FieldValidation() {}
 
+  public static void requireNonBlank(String value) {
+    requireNonBlank(value, "");
+  }
+
+  public static void requireNonBlank(String value, String errorMessage) {
+    Objects.requireNonNull(value);
+    if (value.isBlank()) throw new IllegalArgumentException();
+  }
+
   public static void requiresDateInPast(LocalDate date) {
     requiresDateInPast(date, VALIDATION_ERROR_BIRTHDATE_IS_IN_THE_FUTURE);
   }
