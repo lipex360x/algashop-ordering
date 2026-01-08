@@ -1,0 +1,47 @@
+package com.algaworks.algashop.ordering.domain.valueobject;
+
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
+class BirthDateTest {
+
+  @Test
+  void shouldThrowExceptionForNullDate() {
+    assertThatExceptionOfType(NullPointerException.class)
+      .isThrownBy(() -> new BirthDate(null));
+  }
+
+  @Test
+  void shouldThrowExceptionForFutureDate() {
+    LocalDate futureDate = LocalDate.now().plusDays(1);
+    assertThatExceptionOfType(IllegalArgumentException.class)
+      .isThrownBy(() -> new BirthDate(futureDate));
+  }
+
+  @Test
+  void shouldCreateBirthDateWithValidDate() {
+    LocalDate pastDate = LocalDate.now().minusYears(30);
+    BirthDate birthDate = new BirthDate(pastDate);
+    assertThat(birthDate).isNotNull();
+    assertThat(birthDate.value()).isEqualTo(pastDate);
+  }
+
+
+  @Test
+  void shouldCalculateAge() {
+    LocalDate dateInPast = LocalDate.now().minusYears(20);
+    BirthDate birthDate = new BirthDate(dateInPast);
+    assertThat(birthDate.age()).isEqualTo(20);
+  }
+
+  @Test
+  void shouldReturnToStringCorrectly() {
+    LocalDate date = LocalDate.of(2000, 1, 1);
+    BirthDate birthDate = new BirthDate(date);
+    assertThat(birthDate.toString()).hasToString("2000-01-01");
+  }
+}

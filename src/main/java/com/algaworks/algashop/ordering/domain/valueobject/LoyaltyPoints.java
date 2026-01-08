@@ -12,9 +12,7 @@ public record LoyaltyPoints(Integer value) implements Comparable<LoyaltyPoints> 
 
   public LoyaltyPoints(Integer value) {
     Objects.requireNonNull(value);
-    if (value < 0) {
-      throw new IllegalArgumentException();
-    }
+    if (value < 0) throw new IllegalArgumentException();
     this.value = value;
   }
 
@@ -24,10 +22,7 @@ public record LoyaltyPoints(Integer value) implements Comparable<LoyaltyPoints> 
 
   public LoyaltyPoints add(LoyaltyPoints loyaltyPoints) {
     Objects.requireNonNull(loyaltyPoints);
-    if (loyaltyPoints.value() <= 0) {
-      throw new IllegalArgumentException();
-    }
-
+    if (loyaltyPoints.value() <= 0) throw new IllegalArgumentException();
     return new LoyaltyPoints(this.value() + loyaltyPoints.value());
   }
 

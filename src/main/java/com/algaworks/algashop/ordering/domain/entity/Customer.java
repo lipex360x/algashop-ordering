@@ -2,6 +2,7 @@ package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.exception.CustomerArchivedException;
 import com.algaworks.algashop.ordering.domain.validator.FieldValidation;
+import com.algaworks.algashop.ordering.domain.valueobject.BirthDate;
 import com.algaworks.algashop.ordering.domain.valueobject.CustomerId;
 import com.algaworks.algashop.ordering.domain.valueobject.FullName;
 import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
@@ -16,7 +17,7 @@ import static com.algaworks.algashop.ordering.domain.exception.ErrorMessages.*;
 public class Customer {
   private CustomerId id;
   private FullName fullName;
-  private LocalDate birthDate;
+  private BirthDate birthDate;
   private String email;
   private String phone;
   private String document;
@@ -27,7 +28,7 @@ public class Customer {
   private LoyaltyPoints loyaltyPoints;
 
 
-  public Customer(CustomerId id, FullName fullName, LocalDate birthDate, String email,
+  public Customer(CustomerId id, FullName fullName, BirthDate birthDate, String email,
                   String phone, String document, Boolean promotionNotificationsAllowed,
                   OffsetDateTime registeredAt) {
     this.setId(id);
@@ -42,7 +43,7 @@ public class Customer {
     this.setLoyaltyPoints(LoyaltyPoints.ZERO);
   }
 
-  public Customer(CustomerId id, FullName fullName, LocalDate birthDate,
+  public Customer(CustomerId id, FullName fullName, BirthDate birthDate,
                   String email, String phone, String document,
                   Boolean promotionNotificationsAllowed, Boolean archived,
                   OffsetDateTime registeredAt, OffsetDateTime archivedAt,
@@ -110,7 +111,7 @@ public class Customer {
     return fullName;
   }
 
-  public LocalDate birthDate() {
+  public BirthDate birthDate() {
     return birthDate;
   }
 
@@ -156,12 +157,7 @@ public class Customer {
     this.fullName = fullName;
   }
 
-  private void setBirthDate(LocalDate birthDate) {
-    if (birthDate == null) {
-      this.birthDate = null;
-      return;
-    }
-    FieldValidation.requiresValidBirthDate(birthDate);
+  private void setBirthDate(BirthDate birthDate) {
     this.birthDate = birthDate;
   }
 

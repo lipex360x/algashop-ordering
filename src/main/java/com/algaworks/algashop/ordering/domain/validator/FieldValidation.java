@@ -6,9 +6,7 @@ import org.apache.commons.validator.routines.EmailValidator;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import static com.algaworks.algashop.ordering.domain.exception.ErrorMessages.VALIDATION_ERROR_BIRTHDATE_MUST_IN_PAST;
-import static com.algaworks.algashop.ordering.domain.exception.ErrorMessages.VALIDATION_ERROR_FULLNAME_IS_BLANK;
-import static com.algaworks.algashop.ordering.domain.exception.ErrorMessages.VALIDATION_ERROR_FULLNAME_IS_NULL;
+import static com.algaworks.algashop.ordering.domain.exception.ErrorMessages.*;
 
 public class FieldValidation {
 
@@ -30,6 +28,15 @@ public class FieldValidation {
 
   public static void requiresValidBirthDate(LocalDate birthDate) {
     if (birthDate.isAfter(LocalDate.now())) throw new IllegalArgumentException(VALIDATION_ERROR_BIRTHDATE_MUST_IN_PAST);
+  }
+
+  public static void requiresDateInPast(LocalDate date) {
+    requiresDateInPast(date, VALIDATION_ERROR_BIRTHDATE_MUST_IN_PAST);
+  }
+
+  public static void requiresDateInPast(LocalDate date, String errorMessage) {
+    Objects.requireNonNull(date, errorMessage);
+    if (date.isAfter(LocalDate.now())) throw new IllegalArgumentException(errorMessage);
   }
 
 }

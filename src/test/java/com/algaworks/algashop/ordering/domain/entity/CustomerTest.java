@@ -1,6 +1,7 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.exception.CustomerArchivedException;
+import com.algaworks.algashop.ordering.domain.valueobject.BirthDate;
 import com.algaworks.algashop.ordering.domain.valueobject.CustomerId;
 import com.algaworks.algashop.ordering.domain.valueobject.FullName;
 import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
@@ -19,7 +20,7 @@ class CustomerTest {
   void given_invalidEmail_whenTryCreateCustomer_shouldGenerateException() {
     var id = new CustomerId();
     var name = new FullName("John", "Doe");
-    var birthDate = LocalDate.of(1990, 1, 1);
+    var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
     var invalidEmail = "invalid-email";
     var phone = "456-7894-1234";
     var document = "255-441-456";
@@ -43,7 +44,7 @@ class CustomerTest {
   void given_invalidEmail_whenTryUpdateCustomerEmail_shouldGenerateException() {
     var id = new CustomerId();
     var name = new FullName("John", "Doe");
-    var birthDate = LocalDate.of(1990, 1, 1);
+    var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
     var email = "mail@mail.com";
     var phone = "456-7894-1234";
     var document = "255-441-456";
@@ -69,7 +70,7 @@ class CustomerTest {
   void given_unarchivedCustomer_whenArchive_shouldAnonymize() {
     var id = new CustomerId();
     var name = new FullName("John", "Doe");
-    var birthDate = LocalDate.of(1990, 1, 1);
+    var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
     var email = "jhon@mail.com";
     var phone = "456-7894-1234";
     var document = "255-441-456";
@@ -105,7 +106,7 @@ class CustomerTest {
   void given_archivedCustomer_whenTryUpdate_shouldGenerateException() {
     var id = new CustomerId();
     var name = new FullName("John", "Doe");
-    var birthDate = LocalDate.of(1990, 1, 1);
+    var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
     var email = "jhon@mail.com";
     var phone = "456-7894-1234";
     var document = "255-441-456";
@@ -148,7 +149,7 @@ class CustomerTest {
   void given_brandNewCustomer_whenAddLoyaltyPoints_shouldSumPoints() {
     var id = new CustomerId();
     var name = new FullName("John", "Doe");
-    var birthDate = LocalDate.of(1990, 1, 1);
+    var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
     var email = "jhon@mail.com";
     var phone = "456-7894-1234";
     var document = "255-441-456";
@@ -177,7 +178,7 @@ class CustomerTest {
   void given_brandNewCustomer_whenAddInvalidLoyaltyPoints_shouldGenerateException() {
     var id = new CustomerId();
     var name = new FullName("John", "Doe");
-    var birthDate = LocalDate.of(1990, 1, 1);
+    var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
     var email = "jhon@mail.com";
     var phone = "456-7894-1234";
     var document = "255-441-456";
