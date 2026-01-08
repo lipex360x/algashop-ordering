@@ -25,15 +25,18 @@ class CustomerTest {
   Faker faker = new Faker(Locale.US);
 
   @Test
-  void shouldArchiveACustomer() {
+  void shouldArchiveAExistingCustomer() {
     var id = new CustomerId();
-    var name = new FullName("John", "Doe");
+    var fullName = new FullName(faker.name().firstName(), faker.name().lastName());
     var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
-    var email = new Email("jhon@mail.com");
-    var phone = new Phone("456-7894-1234");
-    var document = new Document("255-441-456");
-    var active = false;
-    var createdAt = OffsetDateTime.now();
+    var email = new Email(faker.internet().emailAddress());
+    var phone = new Phone(faker.phoneNumber().cellPhone());
+    var document = new Document(faker.idNumber().valid());
+    var promotionNotificationsAllowed = false;
+    var archived = false;
+    var registeredAt = OffsetDateTime.now();
+    var archivedAt = OffsetDateTime.now();
+    var loyaltyPoints = LoyaltyPoints.ZERO;
     var address = Address.builder()
       .number(faker.address().streetAddressNumber())
       .street(faker.address().streetAddress())
@@ -43,15 +46,18 @@ class CustomerTest {
       .zipCode(new ZipCode(faker.address().zipCode()))
       .build();
 
-    Customer customer = new Customer(
+    Customer customer = Customer.existing(
       id,
-      name,
+      fullName,
       birthDate,
       email,
       phone,
       document,
-      active,
-      createdAt,
+      promotionNotificationsAllowed,
+      archived,
+      registeredAt,
+      archivedAt,
+      loyaltyPoints,
       address
     );
 
@@ -73,14 +79,12 @@ class CustomerTest {
 
   @Test
   void shouldThrowException_whenUpdatingArchivedCustomer() {
-    var id = new CustomerId();
-    var name = new FullName("John", "Doe");
+    var fullName = new FullName(faker.name().firstName(), faker.name().lastName());
     var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
-    var email = new Email("jhon@mail.com");
-    var phone = new Phone("456-7894-1234");
-    var document = new Document("255-441-456");
-    var active = false;
-    var createdAt = OffsetDateTime.now();
+    var email = new Email(faker.internet().emailAddress());
+    var phone = new Phone(faker.phoneNumber().cellPhone());
+    var document = new Document(faker.idNumber().valid());
+    var promotionNotificationsAllowed = false;
     var address = Address.builder()
       .number(faker.address().streetAddressNumber())
       .street(faker.address().streetAddress())
@@ -90,15 +94,13 @@ class CustomerTest {
       .zipCode(new ZipCode(faker.address().zipCode()))
       .build();
 
-    Customer customer = new Customer(
-      id,
-      name,
+    Customer customer = Customer.brandNew(
+      fullName,
       birthDate,
       email,
       phone,
       document,
-      active,
-      createdAt,
+      promotionNotificationsAllowed,
       address
     );
 
@@ -125,14 +127,12 @@ class CustomerTest {
 
   @Test
   void shouldSumPoints_whenAddingLoyaltyPoints() {
-    var id = new CustomerId();
-    var name = new FullName("John", "Doe");
+    var fullName = new FullName(faker.name().firstName(), faker.name().lastName());
     var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
-    var email = new Email("jhon@mail.com");
-    var phone = new Phone("456-7894-1234");
-    var document = new Document("255-441-456");
-    var active = false;
-    var createdAt = OffsetDateTime.now();
+    var email = new Email(faker.internet().emailAddress());
+    var phone = new Phone(faker.phoneNumber().cellPhone());
+    var document = new Document(faker.idNumber().valid());
+    var promotionNotificationsAllowed = false;
     var address = Address.builder()
       .number(faker.address().streetAddressNumber())
       .street(faker.address().streetAddress())
@@ -142,15 +142,13 @@ class CustomerTest {
       .zipCode(new ZipCode(faker.address().zipCode()))
       .build();
 
-    Customer customer = new Customer(
-      id,
-      name,
+    Customer customer = Customer.brandNew(
+      fullName,
       birthDate,
       email,
       phone,
       document,
-      active,
-      createdAt,
+      promotionNotificationsAllowed,
       address
     );
 
