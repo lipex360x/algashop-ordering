@@ -1,10 +1,10 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.exception.CustomerArchivedException;
-import com.algaworks.algashop.ordering.domain.validator.FieldValidation;
 import com.algaworks.algashop.ordering.domain.valueobject.BirthDate;
 import com.algaworks.algashop.ordering.domain.valueobject.CustomerId;
 import com.algaworks.algashop.ordering.domain.valueobject.Document;
+import com.algaworks.algashop.ordering.domain.valueobject.Email;
 import com.algaworks.algashop.ordering.domain.valueobject.FullName;
 import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
 
@@ -18,7 +18,7 @@ public class Customer {
   private CustomerId id;
   private FullName fullName;
   private BirthDate birthDate;
-  private String email;
+  private Email email;
   private String phone;
   private Document document;
   private Boolean promotionNotificationsAllowed;
@@ -28,7 +28,7 @@ public class Customer {
   private LoyaltyPoints loyaltyPoints;
 
 
-  public Customer(CustomerId id, FullName fullName, BirthDate birthDate, String email,
+  public Customer(CustomerId id, FullName fullName, BirthDate birthDate, Email email,
                   String phone, Document document, Boolean promotionNotificationsAllowed,
                   OffsetDateTime registeredAt) {
     this.setId(id);
@@ -44,7 +44,7 @@ public class Customer {
   }
 
   public Customer(CustomerId id, FullName fullName, BirthDate birthDate,
-                  String email, String phone, Document document,
+                  Email email, String phone, Document document,
                   Boolean promotionNotificationsAllowed, Boolean archived,
                   OffsetDateTime registeredAt, OffsetDateTime archivedAt,
                   LoyaltyPoints loyaltyPoints) {
@@ -73,7 +73,7 @@ public class Customer {
     this.setFullName(new FullName("Anonymous", "Anonymous"));
     this.setPhone("000-000-0000");
     this.setDocument(new Document("000-00-0000"));
-    this.setEmail(UUID.randomUUID() + "@anonymous.com");
+    this.setEmail(new Email(UUID.randomUUID() + "@anonymous.com"));
     this.setBirthDate(null);
     this.setPromotionNotificationsAllowed(false);
   }
@@ -93,7 +93,7 @@ public class Customer {
     this.setFullName(fullName);
   }
 
-  public void changeEmail(String email) {
+  public void changeEmail(Email email) {
     verifyIfChangeable();
     this.setEmail(email);
   }
@@ -115,7 +115,7 @@ public class Customer {
     return birthDate;
   }
 
-  public String email() {
+  public Email email() {
     return email;
   }
 
@@ -153,7 +153,7 @@ public class Customer {
   }
 
   private void setFullName(FullName fullName) {
-    FieldValidation.requiresValidFullName(fullName);
+    Objects.requireNonNull(fullName, VALIDATION_ERROR_FULLNAME_IS_NULL);
     this.fullName = fullName;
   }
 
@@ -161,8 +161,8 @@ public class Customer {
     this.birthDate = birthDate;
   }
 
-  private void setEmail(String email) {
-    FieldValidation.requiresValidEmail(email, VALIDATION_ERROR_EMAIL_IS_INVALID);
+  private void setEmail(Email email) {
+    Objects.requireNonNull(email, VALIDATION_ERROR_EMAIL_IS_NULL);
     this.email = email;
   }
 

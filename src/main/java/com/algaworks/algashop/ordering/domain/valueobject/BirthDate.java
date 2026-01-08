@@ -1,5 +1,7 @@
 package com.algaworks.algashop.ordering.domain.valueobject;
 
+import com.algaworks.algashop.ordering.domain.exception.ErrorMessages;
+
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Objects;
@@ -9,7 +11,7 @@ import static com.algaworks.algashop.ordering.domain.validator.FieldValidation.r
 public record BirthDate(LocalDate value) {
 
   public BirthDate(LocalDate value) {
-    Objects.requireNonNull(value);
+    Objects.requireNonNull(value, ErrorMessages.VALIDATION_ERROR_BIRTHDATE_IS_NULL);
     requiresDateInPast(value);
     this.value = value;
   }

@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
+import static com.algaworks.algashop.ordering.domain.exception.ErrorMessages.VALIDATION_ERROR_BIRTHDATE_IS_NULL;
+import static com.algaworks.algashop.ordering.domain.exception.ErrorMessages.VALIDATION_ERROR_BIRTHDATE_MUST_IN_PAST;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -12,14 +14,16 @@ class BirthDateTest {
   @Test
   void shouldThrowExceptionForNullDate() {
     assertThatExceptionOfType(NullPointerException.class)
-      .isThrownBy(() -> new BirthDate(null));
+      .isThrownBy(() -> new BirthDate(null))
+      .withMessage(VALIDATION_ERROR_BIRTHDATE_IS_NULL);
   }
 
   @Test
   void shouldThrowExceptionForFutureDate() {
     LocalDate futureDate = LocalDate.now().plusDays(1);
     assertThatExceptionOfType(IllegalArgumentException.class)
-      .isThrownBy(() -> new BirthDate(futureDate));
+      .isThrownBy(() -> new BirthDate(futureDate))
+      .withMessage(VALIDATION_ERROR_BIRTHDATE_MUST_IN_PAST);
   }
 
   @Test
