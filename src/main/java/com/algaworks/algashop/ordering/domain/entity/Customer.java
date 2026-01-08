@@ -9,6 +9,7 @@ import com.algaworks.algashop.ordering.domain.valueobject.Email;
 import com.algaworks.algashop.ordering.domain.valueobject.FullName;
 import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
 import com.algaworks.algashop.ordering.domain.valueobject.Phone;
+import lombok.Builder;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
@@ -30,6 +31,7 @@ public class Customer {
   private LoyaltyPoints loyaltyPoints;
   private Address address;
 
+  @Builder(builderClassName = "ExistingCustomerBuilder", builderMethodName = "existing")
   private Customer(
     CustomerId id,
     FullName fullName,
@@ -59,7 +61,8 @@ public class Customer {
     this.setAddress(address);
   }
 
-  public static Customer brandNew(
+  @Builder(builderClassName = "BrandNewCustomerBuilder", builderMethodName = "brandNew")
+  private static Customer createBrandNew(
     FullName fullName,
     BirthDate birthDate,
     Email email,
@@ -80,36 +83,6 @@ public class Customer {
       OffsetDateTime.now(),
       null,
       LoyaltyPoints.ZERO,
-      address
-    );
-  }
-
-  public static Customer existing(
-    CustomerId id,
-    FullName fullName,
-    BirthDate birthDate,
-    Email email,
-    Phone phone,
-    Document document,
-    Boolean promotionNotificationsAllowed,
-    Boolean archived,
-    OffsetDateTime registeredAt,
-    OffsetDateTime archivedAt,
-    LoyaltyPoints loyaltyPoints,
-    Address address
-  ) {
-    return new Customer(
-      id,
-      fullName,
-      birthDate,
-      email,
-      phone,
-      document,
-      promotionNotificationsAllowed,
-      archived,
-      registeredAt,
-      archivedAt,
-      loyaltyPoints,
       address
     );
   }

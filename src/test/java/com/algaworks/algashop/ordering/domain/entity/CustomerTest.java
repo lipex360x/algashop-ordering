@@ -26,40 +26,27 @@ class CustomerTest {
 
   @Test
   void shouldArchiveAExistingCustomer() {
-    var id = new CustomerId();
-    var fullName = new FullName(faker.name().firstName(), faker.name().lastName());
-    var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
-    var email = new Email(faker.internet().emailAddress());
-    var phone = new Phone(faker.phoneNumber().cellPhone());
-    var document = new Document(faker.idNumber().valid());
-    var promotionNotificationsAllowed = false;
-    var archived = false;
-    var registeredAt = OffsetDateTime.now();
-    var archivedAt = OffsetDateTime.now();
-    var loyaltyPoints = LoyaltyPoints.ZERO;
-    var address = Address.builder()
-      .number(faker.address().streetAddressNumber())
-      .street(faker.address().streetAddress())
-      .neighborhood(faker.address().secondaryAddress())
-      .city(faker.address().cityName())
-      .state(faker.address().state())
-      .zipCode(new ZipCode(faker.address().zipCode()))
+    Customer customer = Customer.existing()
+      .id(new CustomerId())
+      .fullName(new FullName(faker.name().firstName(), faker.name().lastName()))
+      .birthDate(new BirthDate(LocalDate.of(1990, 1, 1)))
+      .email(new Email(faker.internet().emailAddress()))
+      .phone(new Phone(faker.phoneNumber().cellPhone()))
+      .document(new Document(faker.idNumber().valid()))
+      .promotionNotificationsAllowed(false)
+      .archived(false)
+      .registeredAt(OffsetDateTime.now())
+      .archivedAt(null)
+      .loyaltyPoints(LoyaltyPoints.ZERO)
+      .address(Address.builder()
+        .number(faker.address().streetAddressNumber())
+        .street(faker.address().streetAddress())
+        .neighborhood(faker.address().secondaryAddress())
+        .city(faker.address().cityName())
+        .state(faker.address().state())
+        .zipCode(new ZipCode(faker.address().zipCode()))
+        .build())
       .build();
-
-    Customer customer = Customer.existing(
-      id,
-      fullName,
-      birthDate,
-      email,
-      phone,
-      document,
-      promotionNotificationsAllowed,
-      archived,
-      registeredAt,
-      archivedAt,
-      loyaltyPoints,
-      address
-    );
 
     customer.archive();
 
@@ -79,30 +66,22 @@ class CustomerTest {
 
   @Test
   void shouldThrowException_whenUpdatingArchivedCustomer() {
-    var fullName = new FullName(faker.name().firstName(), faker.name().lastName());
-    var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
-    var email = new Email(faker.internet().emailAddress());
-    var phone = new Phone(faker.phoneNumber().cellPhone());
-    var document = new Document(faker.idNumber().valid());
-    var promotionNotificationsAllowed = false;
-    var address = Address.builder()
-      .number(faker.address().streetAddressNumber())
-      .street(faker.address().streetAddress())
-      .neighborhood(faker.address().secondaryAddress())
-      .city(faker.address().cityName())
-      .state(faker.address().state())
-      .zipCode(new ZipCode(faker.address().zipCode()))
+    Customer customer = Customer.brandNew()
+      .fullName(new FullName(faker.name().firstName(), faker.name().lastName()))
+      .birthDate(new BirthDate(LocalDate.of(1990, 1, 1)))
+      .email(new Email(faker.internet().emailAddress()))
+      .phone(new Phone(faker.phoneNumber().cellPhone()))
+      .document(new Document(faker.idNumber().valid()))
+      .promotionNotificationsAllowed(false)
+      .address(Address.builder()
+        .number(faker.address().streetAddressNumber())
+        .street(faker.address().streetAddress())
+        .neighborhood(faker.address().secondaryAddress())
+        .city(faker.address().cityName())
+        .state(faker.address().state())
+        .zipCode(new ZipCode(faker.address().zipCode()))
+        .build())
       .build();
-
-    Customer customer = Customer.brandNew(
-      fullName,
-      birthDate,
-      email,
-      phone,
-      document,
-      promotionNotificationsAllowed,
-      address
-    );
 
     customer.archive();
 
@@ -127,30 +106,22 @@ class CustomerTest {
 
   @Test
   void shouldSumPoints_whenAddingLoyaltyPoints() {
-    var fullName = new FullName(faker.name().firstName(), faker.name().lastName());
-    var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
-    var email = new Email(faker.internet().emailAddress());
-    var phone = new Phone(faker.phoneNumber().cellPhone());
-    var document = new Document(faker.idNumber().valid());
-    var promotionNotificationsAllowed = false;
-    var address = Address.builder()
-      .number(faker.address().streetAddressNumber())
-      .street(faker.address().streetAddress())
-      .neighborhood(faker.address().secondaryAddress())
-      .city(faker.address().cityName())
-      .state(faker.address().state())
-      .zipCode(new ZipCode(faker.address().zipCode()))
+    Customer customer = Customer.brandNew()
+      .fullName(new FullName(faker.name().firstName(), faker.name().lastName()))
+      .birthDate(new BirthDate(LocalDate.of(1990, 1, 1)))
+      .email(new Email(faker.internet().emailAddress()))
+      .phone(new Phone(faker.phoneNumber().cellPhone()))
+      .document(new Document(faker.idNumber().valid()))
+      .promotionNotificationsAllowed(false)
+      .address(Address.builder()
+        .number(faker.address().streetAddressNumber())
+        .street(faker.address().streetAddress())
+        .neighborhood(faker.address().secondaryAddress())
+        .city(faker.address().cityName())
+        .state(faker.address().state())
+        .zipCode(new ZipCode(faker.address().zipCode()))
+        .build())
       .build();
-
-    Customer customer = Customer.brandNew(
-      fullName,
-      birthDate,
-      email,
-      phone,
-      document,
-      promotionNotificationsAllowed,
-      address
-    );
 
     customer.addLoyaltyPoints(new LoyaltyPoints(10));
     assertThat(customer.loyaltyPoints()).isEqualTo(new LoyaltyPoints(10));
