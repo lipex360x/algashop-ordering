@@ -4,10 +4,10 @@ import com.algaworks.algashop.ordering.domain.exception.CustomerArchivedExceptio
 import com.algaworks.algashop.ordering.domain.validator.FieldValidation;
 import com.algaworks.algashop.ordering.domain.valueobject.BirthDate;
 import com.algaworks.algashop.ordering.domain.valueobject.CustomerId;
+import com.algaworks.algashop.ordering.domain.valueobject.Document;
 import com.algaworks.algashop.ordering.domain.valueobject.FullName;
 import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
 
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -20,7 +20,7 @@ public class Customer {
   private BirthDate birthDate;
   private String email;
   private String phone;
-  private String document;
+  private Document document;
   private Boolean promotionNotificationsAllowed;
   private Boolean archived;
   private OffsetDateTime registeredAt;
@@ -29,7 +29,7 @@ public class Customer {
 
 
   public Customer(CustomerId id, FullName fullName, BirthDate birthDate, String email,
-                  String phone, String document, Boolean promotionNotificationsAllowed,
+                  String phone, Document document, Boolean promotionNotificationsAllowed,
                   OffsetDateTime registeredAt) {
     this.setId(id);
     this.setFullName(fullName);
@@ -44,7 +44,7 @@ public class Customer {
   }
 
   public Customer(CustomerId id, FullName fullName, BirthDate birthDate,
-                  String email, String phone, String document,
+                  String email, String phone, Document document,
                   Boolean promotionNotificationsAllowed, Boolean archived,
                   OffsetDateTime registeredAt, OffsetDateTime archivedAt,
                   LoyaltyPoints loyaltyPoints) {
@@ -72,7 +72,7 @@ public class Customer {
     this.setArchivedAt(OffsetDateTime.now());
     this.setFullName(new FullName("Anonymous", "Anonymous"));
     this.setPhone("000-000-0000");
-    this.setDocument("000-00-0000");
+    this.setDocument(new Document("000-00-0000"));
     this.setEmail(UUID.randomUUID() + "@anonymous.com");
     this.setBirthDate(null);
     this.setPromotionNotificationsAllowed(false);
@@ -123,7 +123,7 @@ public class Customer {
     return phone;
   }
 
-  public String document() {
+  public Document document() {
     return document;
   }
 
@@ -190,8 +190,7 @@ public class Customer {
     this.promotionNotificationsAllowed = promotionNotificationsAllowed;
   }
 
-  private void setDocument(String document) {
-    Objects.requireNonNull(document);
+  private void setDocument(Document document) {
     this.document = document;
   }
 

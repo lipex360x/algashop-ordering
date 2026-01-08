@@ -1,13 +1,10 @@
 package com.algaworks.algashop.ordering.domain.valueobject;
 
-import com.algaworks.algashop.ordering.domain.exception.ErrorMessages;
-
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Objects;
 
 import static com.algaworks.algashop.ordering.domain.validator.FieldValidation.requiresDateInPast;
-
 
 public record BirthDate(LocalDate value) {
 

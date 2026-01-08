@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class LoyaltyPointsTest {
 
   @Test
-  void shouldThrowExceptionIfAddInvalidValue() {
+  void shouldThrowExceptionForInvalidValue() {
     LoyaltyPoints loyaltyPoints = new LoyaltyPoints(10);
     assertThatExceptionOfType(IllegalArgumentException.class)
       .isThrownBy(() -> loyaltyPoints.add(0));
@@ -17,7 +17,7 @@ class LoyaltyPointsTest {
   }
 
   @Test
-  void shouldCreateLoyaltyPointsWithValidValue() {
+  void shouldCreateLoyaltyPoints() {
     LoyaltyPoints loyaltyPoints = new LoyaltyPoints(10);
     assertThat(loyaltyPoints.value()).isEqualTo(10);
   }

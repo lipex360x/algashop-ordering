@@ -3,6 +3,7 @@ package com.algaworks.algashop.ordering.domain.entity;
 import com.algaworks.algashop.ordering.domain.exception.CustomerArchivedException;
 import com.algaworks.algashop.ordering.domain.valueobject.BirthDate;
 import com.algaworks.algashop.ordering.domain.valueobject.CustomerId;
+import com.algaworks.algashop.ordering.domain.valueobject.Document;
 import com.algaworks.algashop.ordering.domain.valueobject.FullName;
 import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
 import org.assertj.core.api.Assertions;
@@ -23,7 +24,7 @@ class CustomerTest {
     var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
     var invalidEmail = "invalid-email";
     var phone = "456-7894-1234";
-    var document = "255-441-456";
+    var document = new Document("255-441-456");
     var active = false;
     var createdAt = OffsetDateTime.now();
 
@@ -47,7 +48,7 @@ class CustomerTest {
     var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
     var email = "mail@mail.com";
     var phone = "456-7894-1234";
-    var document = "255-441-456";
+    var document = new Document("255-441-456");
     var active = false;
     var createdAt = OffsetDateTime.now();
 
@@ -73,7 +74,7 @@ class CustomerTest {
     var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
     var email = "jhon@mail.com";
     var phone = "456-7894-1234";
-    var document = "255-441-456";
+    var document = new Document("255-441-456");
     var active = false;
     var createdAt = OffsetDateTime.now();
 
@@ -96,7 +97,7 @@ class CustomerTest {
       c -> assertThat(c.fullName()).isEqualTo(new FullName("Anonymous", "Anonymous")),
       c -> assertThat(c.email()).isNotEqualTo("jhon@mail.com"),
       c -> assertThat(c.phone()).isEqualTo("000-000-0000"),
-      c -> assertThat(c.document()).isEqualTo("000-00-0000"),
+      c -> assertThat(c.document()).hasToString("000-00-0000"),
       c -> assertThat(c.isPromotionNotificationsAllowed()).isFalse(),
       c -> assertThat(c.birthDate()).isNull()
     );
@@ -109,7 +110,7 @@ class CustomerTest {
     var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
     var email = "jhon@mail.com";
     var phone = "456-7894-1234";
-    var document = "255-441-456";
+    var document = new Document("255-441-456");
     var active = false;
     var createdAt = OffsetDateTime.now();
 
@@ -152,7 +153,7 @@ class CustomerTest {
     var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
     var email = "jhon@mail.com";
     var phone = "456-7894-1234";
-    var document = "255-441-456";
+    var document = new Document("255-441-456");
     var active = false;
     var createdAt = OffsetDateTime.now();
 
@@ -181,7 +182,7 @@ class CustomerTest {
     var birthDate = new BirthDate(LocalDate.of(1990, 1, 1));
     var email = "jhon@mail.com";
     var phone = "456-7894-1234";
-    var document = "255-441-456";
+    var document = new Document("255-441-456");
     var active = false;
     var createdAt = OffsetDateTime.now();
 

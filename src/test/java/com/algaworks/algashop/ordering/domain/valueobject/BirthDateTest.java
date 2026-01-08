@@ -23,7 +23,7 @@ class BirthDateTest {
   }
 
   @Test
-  void shouldCreateBirthDateWithValidDate() {
+  void shouldCreateBirthDate() {
     LocalDate pastDate = LocalDate.now().minusYears(30);
     BirthDate birthDate = new BirthDate(pastDate);
     assertThat(birthDate).isNotNull();
