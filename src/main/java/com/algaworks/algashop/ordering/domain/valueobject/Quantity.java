@@ -1,0 +1,26 @@
+package com.algaworks.algashop.ordering.domain.valueobject;
+
+import org.springframework.lang.NonNull;
+
+import java.util.Objects;
+
+public record Quantity(Integer value) implements Comparable<Quantity> {
+
+  public static final Quantity ZERO = new Quantity(0);
+
+  public Quantity {
+    Objects.requireNonNull(value);
+    if (value < 0) throw new IllegalArgumentException();
+  }
+
+  @Override
+  public int compareTo(Quantity o) {
+    return this.value.compareTo(o.value);
+  }
+
+  @NonNull
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
+}
