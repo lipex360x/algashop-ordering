@@ -37,7 +37,7 @@ class FullNameTest {
   }
 
   @Test
-  void shouldCreateFullName_trimmingValues() {
+  void shouldCreateFullNameTrimmingValues() {
     FullName fullName = new FullName("  John  ", "  Doe  ");
     assertThat(fullName.firstName()).hasToString("John");
     assertThat(fullName.lastName()).hasToString("Doe");

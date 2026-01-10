@@ -13,6 +13,11 @@ public class ErrorMessages {
   public static final String VALIDATION_ERROR_FIRST_NAME_IS_BLANK = "First name cannot be blank";
   public static final String VALIDATION_ERROR_LAST_NAME_IS_BLANK = "Last name cannot be blank";
 
+  public static final String VALIDATION_ERROR_VALUE_IS_NULL = "Value cannot be null";
+  public static final String VALIDATION_ERROR_VALUE_IS_BLANK = "Value cannot be blank";
+  public static final String VALIDATION_ERROR_VALUE_IS_NEGATIVE = "Value cannot be negative";
+  public static final String VALIDATION_ERROR_VALUE_IS_ZERO = "Value cannot be zero";
+  public static final String VALIDATION_ERROR_VALUE_IS_ZERO_OR_NEGATIVE = "Value cannot be zero or negative";
 
   public static final String VALIDATION_ERROR_EMAIL_IS_NULL = "Email cannot be null";
   public static final String VALIDATION_ERROR_EMAIL_IS_INVALID = "Email is invalid";

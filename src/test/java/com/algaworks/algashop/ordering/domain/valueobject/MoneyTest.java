@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.domain.valueobject;
 
+import com.algaworks.algashop.ordering.domain.exception.ErrorMessages;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -12,16 +13,19 @@ class MoneyTest {
   @Test
   void shouldThrowExceptionWhenValueIsNull() {
     assertThatExceptionOfType(NullPointerException.class)
-      .isThrownBy(() -> new Money((BigDecimal) null));
+      .isThrownBy(() -> new Money((BigDecimal) null))
+      .withMessage(ErrorMessages.VALIDATION_ERROR_VALUE_IS_NULL);
   }
 
   @Test
   void shouldThrowExceptionWhenValueIsNegative() {
     assertThatExceptionOfType(IllegalArgumentException.class)
-      .isThrownBy(() -> new Money("-19.97"));
+      .isThrownBy(() -> new Money("-19.97"))
+      .withMessage(ErrorMessages.VALIDATION_ERROR_VALUE_IS_NEGATIVE);
 
     assertThatExceptionOfType(IllegalArgumentException.class)
-      .isThrownBy(() -> new Money(BigDecimal.valueOf(-10.0)));
+      .isThrownBy(() -> new Money(BigDecimal.valueOf(-10.0)))
+      .withMessage(ErrorMessages.VALIDATION_ERROR_VALUE_IS_NEGATIVE);
   }
 
   @Test
@@ -30,10 +34,12 @@ class MoneyTest {
     Quantity quantity = new Quantity(0);
 
     assertThatExceptionOfType(IllegalArgumentException.class)
-      .isThrownBy(() -> money.multiply(quantity));
+      .isThrownBy(() -> money.multiply(quantity))
+      .withMessage(ErrorMessages.VALIDATION_ERROR_VALUE_IS_ZERO_OR_NEGATIVE);
 
     assertThatExceptionOfType(IllegalArgumentException.class)
-      .isThrownBy(() -> money.multiply(Quantity.ZERO));
+      .isThrownBy(() -> money.multiply(Quantity.ZERO))
+      .withMessage(ErrorMessages.VALIDATION_ERROR_VALUE_IS_ZERO_OR_NEGATIVE);
   }
 
   @Test
@@ -41,7 +47,8 @@ class MoneyTest {
     Money money = new Money("1.97");
 
     assertThatExceptionOfType(NullPointerException.class)
-      .isThrownBy(() -> money.add(null));
+      .isThrownBy(() -> money.add(null))
+      .withMessage(ErrorMessages.VALIDATION_ERROR_VALUE_IS_NULL);
   }
 
   @Test

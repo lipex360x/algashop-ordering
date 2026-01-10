@@ -10,12 +10,12 @@ public class FieldValidation {
   private FieldValidation() {}
 
   public static void requireNonBlank(String value) {
-    requireNonBlank(value, "");
+    requireNonBlank(value, VALIDATION_ERROR_VALUE_IS_BLANK);
   }
 
   public static void requireNonBlank(String value, String errorMessage) {
     Objects.requireNonNull(value);
-    if (value.isBlank()) throw new IllegalArgumentException();
+    if (value.isBlank()) throw new IllegalArgumentException(errorMessage);
   }
 
   public static void requiresDateInPast(LocalDate date) {

@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.domain.valueobject;
 
+import com.algaworks.algashop.ordering.domain.exception.ErrorMessages;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -10,13 +11,15 @@ class QuantityTest {
   @Test
   void shouldThrowExceptionWhenValueIsNull() {
     assertThatExceptionOfType(NullPointerException.class)
-      .isThrownBy(() -> new Quantity(null));
+      .isThrownBy(() -> new Quantity(null))
+      .withMessage(ErrorMessages.VALIDATION_ERROR_VALUE_IS_NULL);
   }
 
   @Test
   void shouldThrowExceptionWhenValueIsNegative() {
     assertThatExceptionOfType(IllegalArgumentException.class)
-      .isThrownBy(() -> new Quantity(-1));
+      .isThrownBy(() -> new Quantity(-1))
+      .withMessage(ErrorMessages.VALIDATION_ERROR_VALUE_IS_NEGATIVE);
   }
 
   @Test
