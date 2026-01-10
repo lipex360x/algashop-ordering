@@ -13,6 +13,11 @@ public record Quantity(Integer value) implements Comparable<Quantity> {
     if (value < 0) throw new IllegalArgumentException();
   }
 
+  public Quantity add(Quantity quantity) {
+    Objects.requireNonNull(quantity);
+    return new Quantity(this.value + quantity.value());
+  }
+
   @Override
   public int compareTo(Quantity o) {
     return this.value.compareTo(o.value);
