@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Collections;
@@ -116,6 +117,8 @@ public class Order {
     if (this.items == null) this.items = new HashSet<>();
 
     this.items.add(orderItem);
+
+    this.recalculateTotals();
   }
 
   public OrderId id() {
@@ -176,6 +179,21 @@ public class Order {
 
   public Set<OrderItem> items() {
     return Collections.unmodifiableSet(this.items);
+  }
+
+  private void recalculateTotals() {
+    BigDecimal totalItemsAmount = this.items().stream().map(i -> i.totalAmount().value())
+      .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    Integer totalItemsQuantity = this.items().stream().map(i -> i.quantity().value())
+      .reduce(0, Integer::sum);
+
+    BigDecimal moneyShippingCost = this.shippingCost() == null ? BigDecimal.ZERO : this.shippingCost.value();
+
+    BigDecimal moneyTotalAmount = totalItemsAmount.add(moneyShippingCost);
+
+    this.setTotalAmount(new Money(moneyTotalAmount));
+    this.setTotalItems(new Quantity(totalItemsQuantity));
   }
 
   private void setId(@NonNull OrderId id) {
