@@ -6,11 +6,13 @@ import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.ShippingInfo;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -39,6 +41,7 @@ public class Order {
 
   private Set<OrderItem> items;
 
+  @Builder(builderClassName = "ExistingOrderBuilder", builderMethodName = "existing")
   public Order(
     OrderId id,
     CustomerId customerId,
@@ -71,6 +74,26 @@ public class Order {
     this.setShippingCost(shippingCost);
     this.setExpectedDeliveryDate(expectedDeliveryDate);
     this.setItems(items);
+  }
+
+  public static Order draft(CustomerId customerId) {
+    return new Order(
+      new OrderId(),
+      customerId,
+      Money.ZERO,
+      Quantity.ZERO,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      OrderStatus.DRAFT,
+      null,
+      null,
+      null,
+      new HashSet<>()
+    );
   }
 
   public OrderId id() {

@@ -1,6 +1,7 @@
 package com.algaworks.algashop.ordering.domain.valueobject.id;
 
 import com.algaworks.algashop.ordering.domain.exception.ErrorMessages;
+import com.algaworks.algashop.ordering.domain.utility.IdGenerator;
 import io.hypersistence.tsid.TSID;
 import org.springframework.lang.NonNull;
 
@@ -10,6 +11,10 @@ public record OrderItemId(TSID value) {
 
   public OrderItemId {
     Objects.requireNonNull(value, ErrorMessages.VALIDATION_ERROR_VALUE_IS_NULL);
+  }
+
+  public OrderItemId() {
+    this(IdGenerator.generateTSID());
   }
 
   public OrderItemId(Long value) {
