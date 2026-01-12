@@ -1,0 +1,196 @@
+package com.algaworks.algashop.ordering.domain.entity;
+
+import com.algaworks.algashop.ordering.domain.valueobject.BillingInfo;
+import com.algaworks.algashop.ordering.domain.valueobject.Money;
+import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
+import com.algaworks.algashop.ordering.domain.valueobject.ShippingInfo;
+import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
+import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.Set;
+
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class Order {
+
+  @EqualsAndHashCode.Include
+  private OrderId id;
+  private CustomerId customerId;
+
+  private Money totalAmount;
+  private Quantity totalItems;
+
+  private OffsetDateTime placedAt;
+  private OffsetDateTime paidAt;
+  private OffsetDateTime cancelledAt;
+  private OffsetDateTime readyAt;
+
+  private BillingInfo billing;
+  private ShippingInfo shipping;
+
+  private OrderStatus status;
+  private PaymentMethod paymentMethod;
+
+  private Money shippingCost;
+  private LocalDate expectedDeliveryDate;
+
+  private Set<OrderItem> items;
+
+  public Order(
+    OrderId id,
+    CustomerId customerId,
+    Money totalAmount,
+    Quantity totalItems,
+    OffsetDateTime placedAt,
+    OffsetDateTime paidAt,
+    OffsetDateTime cancelledAt,
+    OffsetDateTime readyAt,
+    BillingInfo billing,
+    ShippingInfo shipping,
+    OrderStatus status,
+    PaymentMethod paymentMethod,
+    Money shippingCost,
+    LocalDate expectedDeliveryDate,
+    Set<OrderItem> items
+  ) {
+    this.setId(id);
+    this.setCustomerId(customerId);
+    this.setTotalAmount(totalAmount);
+    this.setTotalItems(totalItems);
+    this.setPlacedAt(placedAt);
+    this.setPaidAt(paidAt);
+    this.setCancelledAt(cancelledAt);
+    this.setReadyAt(readyAt);
+    this.setBilling(billing);
+    this.setShipping(shipping);
+    this.setStatus(status);
+    this.setPaymentMethod(paymentMethod);
+    this.setShippingCost(shippingCost);
+    this.setExpectedDeliveryDate(expectedDeliveryDate);
+    this.setItems(items);
+  }
+
+  public OrderId id() {
+    return id;
+  }
+
+  public CustomerId customerId() {
+    return customerId;
+  }
+
+  public Money totalAmount() {
+    return totalAmount;
+  }
+
+  public Quantity totalItems() {
+    return totalItems;
+  }
+
+  public OffsetDateTime placedAt() {
+    return placedAt;
+  }
+
+  public OffsetDateTime paidAt() {
+    return paidAt;
+  }
+
+  public OffsetDateTime cancelledAt() {
+    return cancelledAt;
+  }
+
+  public OffsetDateTime readyAt() {
+    return readyAt;
+  }
+
+  public BillingInfo billing() {
+    return billing;
+  }
+
+  public ShippingInfo shipping() {
+    return shipping;
+  }
+
+  public OrderStatus status() {
+    return status;
+  }
+
+  public PaymentMethod paymentMethod() {
+    return paymentMethod;
+  }
+
+  public Money shippingCost() {
+    return shippingCost;
+  }
+
+  public LocalDate expectedDeliveryDate() {
+    return expectedDeliveryDate;
+  }
+
+  public Set<OrderItem> items() {
+    return items;
+  }
+
+  private void setId(@NonNull OrderId id) {
+    this.id = id;
+  }
+
+  private void setCustomerId(@NonNull CustomerId customerId) {
+    this.customerId = customerId;
+  }
+
+  private void setTotalAmount(@NonNull Money totalAmount) {
+    this.totalAmount = totalAmount;
+  }
+
+  private void setTotalItems(@NonNull Quantity totalItems) {
+    this.totalItems = totalItems;
+  }
+
+  private void setPlacedAt(OffsetDateTime placedAt) {
+    this.placedAt = placedAt;
+  }
+
+  private void setPaidAt(OffsetDateTime paidAt) {
+    this.paidAt = paidAt;
+  }
+
+  private void setCancelledAt(OffsetDateTime cancelledAt) {
+    this.cancelledAt = cancelledAt;
+  }
+
+  private void setReadyAt(OffsetDateTime readyAt) {
+    this.readyAt = readyAt;
+  }
+
+  private void setBilling(BillingInfo billing) {
+    this.billing = billing;
+  }
+
+  private void setShipping(ShippingInfo shipping) {
+    this.shipping = shipping;
+  }
+
+  private void setStatus(@NonNull OrderStatus status) {
+    this.status = status;
+  }
+
+  private void setPaymentMethod(PaymentMethod paymentMethod) {
+    this.paymentMethod = paymentMethod;
+  }
+
+  private void setShippingCost(Money shippingCost) {
+    this.shippingCost = shippingCost;
+  }
+
+  private void setExpectedDeliveryDate(LocalDate expectedDeliveryDate) {
+    this.expectedDeliveryDate = expectedDeliveryDate;
+  }
+
+  private void setItems(@NonNull Set<OrderItem> items) {
+    this.items = items;
+  }
+
+}
