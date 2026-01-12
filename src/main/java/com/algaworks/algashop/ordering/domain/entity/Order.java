@@ -2,10 +2,12 @@ package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.valueobject.BillingInfo;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
+import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.ShippingInfo;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
+import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -94,6 +96,25 @@ public class Order {
       null,
       new HashSet<>()
     );
+  }
+
+  public void addItem(
+    ProductId productId,
+    ProductName productName,
+    Money price,
+    Quantity quantity
+  ) {
+    OrderItem orderItem = OrderItem.brandNew()
+      .orderId(this.id())
+      .productId(productId)
+      .productName(productName)
+      .quantity(quantity)
+      .price(price)
+      .build();
+
+    if (this.items == null) this.items = new HashSet<>();
+
+    this.items.add(orderItem);
   }
 
   public OrderId id() {
