@@ -9,11 +9,11 @@ import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.Test;
 
-import java.util.Iterator;
 import java.util.Locale;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertWith;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 class OrderTest {
 
@@ -62,5 +62,22 @@ class OrderTest {
       .extracting(OrderItem::productName)
       .extracting(ProductName::value)
       .containsExactly(product1.value(), product2.value(), product3.value());
+  }
+
+  @Test
+  void shouldGenerateExceptionWhenTryToChangeItemSet() {
+    Order order = Order.draft(new CustomerId());
+
+    order.addItem(
+      new ProductId(),
+      new ProductName(faker.commerce().productName()),
+      new Money(faker.commerce().price()),
+      new Quantity(faker.number().positive())
+    );
+
+    Set<OrderItem> items = order.items();
+
+    assertThatExceptionOfType(UnsupportedOperationException.class)
+      .isThrownBy(items::clear);
   }
 }
