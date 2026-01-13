@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
+import com.algaworks.algashop.ordering.domain.exception.OrderStatusCannotBeChangedException;
 import com.algaworks.algashop.ordering.domain.valueobject.BillingInfo;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -115,10 +117,28 @@ public class Order {
       .build();
 
     if (this.items == null) this.items = new HashSet<>();
-
     this.items.add(orderItem);
-
     this.recalculateTotals();
+  }
+
+  public void place() {
+    // TODO Business rules!
+    this.changeStatus(OrderStatus.PLACED);
+  }
+
+  private void changeStatus(OrderStatus newStatus) {
+    Objects.requireNonNull(newStatus);
+    if (this.status.canNotChangeTo(newStatus))
+      throw new OrderStatusCannotBeChangedException(this.id(), this.status(), newStatus);
+    this.setStatus(newStatus);
+  }
+
+  public boolean isDraft() {
+    return OrderStatus.DRAFT.equals(this.status());
+  }
+
+  public boolean isPlaced() {
+    return OrderStatus.PLACED.equals(this.status());
   }
 
   public OrderId id() {

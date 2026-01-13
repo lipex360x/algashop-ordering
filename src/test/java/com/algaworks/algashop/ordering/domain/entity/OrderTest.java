@@ -1,6 +1,7 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
 
+import com.algaworks.algashop.ordering.domain.exception.OrderStatusCannotBeChangedException;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
@@ -101,5 +102,21 @@ class OrderTest {
 
     assertThat(order.totalAmount()).isEqualTo(new Money("120"));
     assertThat(order.totalItems()).isEqualTo(new Quantity(7));
+  }
+
+  @Test
+  void shouldChangeStatusOrderFromDraftToPlaced() {
+    Order order = Order.draft(new CustomerId());
+    order.place();
+    assertThat(order.isPlaced()).isTrue();
+  }
+
+  @Test
+  void shouldThrowExceptionWhenChangeStatusOrderFromPlacedToPlaced() {
+    Order order = Order.draft(new CustomerId());
+    order.place();
+    assertThatExceptionOfType(OrderStatusCannotBeChangedException.class)
+      .isThrownBy(order::place)
+      .withMessage(String.format("Cannot change order %S from status PLACED to PLACED", order.id()));
   }
 }
