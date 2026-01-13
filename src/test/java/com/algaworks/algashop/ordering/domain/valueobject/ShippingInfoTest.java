@@ -1,11 +1,12 @@
 package com.algaworks.algashop.ordering.domain.valueobject;
 
 import com.algaworks.algashop.ordering.domain.exception.ErrorMessages;
-import net.datafaker.Faker;
+import com.algaworks.algashop.ordering.domain.mock.AddressMock;
+import com.algaworks.algashop.ordering.domain.mock.DocumentMock;
+import com.algaworks.algashop.ordering.domain.mock.FullNameMock;
+import com.algaworks.algashop.ordering.domain.mock.PhoneMock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertWith;
@@ -13,7 +14,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 
 class ShippingInfoTest {
 
-  static Faker faker = new Faker(Locale.US);
 
   private FullName fullName;
   private Document document;
@@ -22,17 +22,10 @@ class ShippingInfoTest {
 
   @BeforeEach
   void setup() {
-    fullName = new FullName(faker.name().firstName(), faker.name().lastName());
-    document = new Document(faker.idNumber().valid());
-    phone = new Phone(faker.phoneNumber().cellPhone());
-    address = Address.builder()
-      .number(faker.address().streetAddressNumber())
-      .street(faker.address().streetAddress())
-      .neighborhood(faker.address().secondaryAddress())
-      .city(faker.address().cityName())
-      .state(faker.address().state())
-      .zipCode(new ZipCode(faker.address().zipCode()))
-      .build();
+    fullName = FullNameMock.build();
+    document = DocumentMock.build();
+    phone = PhoneMock.build();
+    address = AddressMock.build();
   }
 
   @Test
