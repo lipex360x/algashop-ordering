@@ -1,6 +1,6 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
-import com.algaworks.algashop.ordering.domain.builder.CustomerTestDataBuilder;
+import com.algaworks.algashop.ordering.domain.builder.CustomerDataBuilder;
 import com.algaworks.algashop.ordering.domain.exception.CustomerArchivedException;
 import com.algaworks.algashop.ordering.domain.valueobject.Email;
 import com.algaworks.algashop.ordering.domain.valueobject.FullName;
@@ -16,7 +16,7 @@ class CustomerTest {
 
   @Test
   void shouldArchiveAExistingCustomer() {
-    Customer customer = CustomerTestDataBuilder.existingCustomer().build();
+    Customer customer = CustomerDataBuilder.builder().buildExisting();
     customer.archive();
     Assertions.assertWith((customer),
       c -> assertThat(c.isArchived()).isTrue(),
@@ -34,7 +34,7 @@ class CustomerTest {
 
   @Test
   void shouldThrowException_whenUpdatingArchivedCustomer() {
-    Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
+    Customer customer = CustomerDataBuilder.builder().buildNew();
     customer.archive();
     assertThatExceptionOfType(CustomerArchivedException.class)
       .isThrownBy(customer::archive);
@@ -52,7 +52,7 @@ class CustomerTest {
 
   @Test
   void shouldSumPoints_whenAddingLoyaltyPoints() {
-    Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
+    Customer customer = CustomerDataBuilder.builder().buildNew();
     customer.addLoyaltyPoints(new LoyaltyPoints(10));
     assertThat(customer.loyaltyPoints()).isEqualTo(new LoyaltyPoints(10));
     customer.addLoyaltyPoints(new LoyaltyPoints(10));

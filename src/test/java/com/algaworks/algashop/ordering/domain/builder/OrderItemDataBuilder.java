@@ -1,0 +1,81 @@
+package com.algaworks.algashop.ordering.domain.builder;
+
+import com.algaworks.algashop.ordering.domain.entity.OrderItem;
+import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
+import com.algaworks.algashop.ordering.domain.valueobject.Money;
+import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
+import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
+import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
+import com.algaworks.algashop.ordering.domain.valueobject.id.OrderItemId;
+
+import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
+import static lombok.AccessLevel.PRIVATE;
+
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.With;
+
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@NoArgsConstructor(access = PRIVATE)
+@AllArgsConstructor(access = PRIVATE)
+public class OrderItemDataBuilder {
+
+  private static final CustomFaker customFaker = new CustomFaker();
+
+  @With
+  private Supplier<OrderItemId> id = () -> customFaker.valueObject().orderItemId();
+
+  @With
+  private Supplier<OrderId> orderId = () -> customFaker.valueObject().orderId();
+
+  @With
+  private Supplier<ProductId> productId = () -> customFaker.valueObject().productId();
+
+  @With
+  private Supplier<ProductName> productName = () -> customFaker.valueObject().productName();
+
+  @With
+  private Supplier<Money> price = () -> customFaker.valueObject().money(5, 200);
+
+  @With
+  private Supplier<Quantity> quantity = () -> customFaker.valueObject().quantity(1, 10);
+
+  @With
+  private Supplier<Money> totalAmount = () -> customFaker.valueObject().money();
+
+  public static OrderItemDataBuilder builder() {
+    return new OrderItemDataBuilder();
+  }
+
+  public OrderItem buildNew() {
+    return OrderItem.brandNew()
+      .orderId(orderId.get())
+      .productId(productId.get())
+      .productName(productName.get())
+      .price(price.get())
+      .quantity(quantity.get())
+      .build();
+  }
+
+  public OrderItem buildExisting() {
+    return OrderItem.existing()
+      .id(id.get())
+      .orderId(orderId.get())
+      .productId(productId.get())
+      .productName(productName.get())
+      .price(price.get())
+      .quantity(quantity.get())
+      .totalAmount(totalAmount.get())
+      .build();
+  }
+
+  public Set<OrderItem> buildExistingList(final int amount){
+    return Stream.generate(() -> OrderItemDataBuilder.builder().buildExisting())
+      .limit(amount)
+      .collect(Collectors.toSet());
+  }
+}

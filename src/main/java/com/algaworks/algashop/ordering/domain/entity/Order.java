@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
+import com.algaworks.algashop.ordering.domain.exception.OrderCannotBePlacedException;
 import com.algaworks.algashop.ordering.domain.exception.OrderInvalidShippingDeliveryDateException;
 import com.algaworks.algashop.ordering.domain.exception.OrderStatusCannotBeChangedException;
 import com.algaworks.algashop.ordering.domain.valueobject.BillingInfo;
@@ -21,6 +22,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
+import static com.algaworks.algashop.ordering.domain.exception.ErrorMessages.*;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Order {
@@ -58,8 +61,8 @@ public class Order {
     OffsetDateTime paidAt,
     OffsetDateTime cancelledAt,
     OffsetDateTime readyAt,
-    BillingInfo billing,
-    ShippingInfo shipping,
+    BillingInfo billingInfo,
+    ShippingInfo shippingInfo,
     OrderStatus status,
     PaymentMethod paymentMethod,
     Money shippingCost,
@@ -74,8 +77,8 @@ public class Order {
     this.setPaidAt(paidAt);
     this.setCancelledAt(cancelledAt);
     this.setReadyAt(readyAt);
-    this.setBilling(billing);
-    this.setShipping(shipping);
+    this.setBilling(billingInfo);
+    this.setShipping(shippingInfo);
     this.setStatus(status);
     this.setPaymentMethod(paymentMethod);
     this.setShippingCost(shippingCost);
@@ -97,7 +100,7 @@ public class Order {
       null,
       OrderStatus.DRAFT,
       null,
-      null,
+      Money.ZERO,
       null,
       new HashSet<>()
     );
@@ -123,8 +126,23 @@ public class Order {
   }
 
   public void place() {
-    // TODO Business rules!
+    Objects.requireNonNull(this.shipping());
+    Objects.requireNonNull(this.billing());
+    Objects.requireNonNull(this.expectedDeliveryDate());
+    Objects.requireNonNull(this.shippingCost());
+    Objects.requireNonNull(this.paymentMethod());
+    Objects.requireNonNull(this.items());
+
+    if (this.items().isEmpty())
+      throw new OrderCannotBePlacedException(this.id(), VALIDATION_ITEMS_LIST_IS_EMPTY);
+
+    this.setPlacedAt(OffsetDateTime.now());
     this.changeStatus(OrderStatus.PLACED);
+  }
+
+  public void markAsPaid() {
+    this.setPaidAt(OffsetDateTime.now());
+    this.changeStatus(OrderStatus.PAID);
   }
 
   public void changePaymentMethod(@NonNull PaymentMethod paymentMethod) {
@@ -135,7 +153,7 @@ public class Order {
     this.setBilling(billing);
   }
 
-  public void changeShipping(
+  public void changeShippingInfo(
     @NonNull ShippingInfo shipping,
     @NonNull Money shippingCost,
     @NonNull LocalDate expectedDeliveryDate
@@ -153,6 +171,10 @@ public class Order {
 
   public boolean isPlaced() {
     return OrderStatus.PLACED.equals(this.status());
+  }
+
+  public boolean isPaid() {
+    return OrderStatus.PAID.equals(this.status());
   }
 
   public OrderId id() {
@@ -296,5 +318,4 @@ public class Order {
   private void setItems(@NonNull Set<OrderItem> items) {
     this.items = items;
   }
-
 }

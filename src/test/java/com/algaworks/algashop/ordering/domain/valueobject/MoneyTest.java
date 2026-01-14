@@ -21,11 +21,11 @@ class MoneyTest {
   void shouldThrowExceptionWhenValueIsNegative() {
     assertThatExceptionOfType(IllegalArgumentException.class)
       .isThrownBy(() -> new Money("-19.97"))
-      .withMessage(ErrorMessages.VALIDATION_ERROR_VALUE_IS_NEGATIVE);
+      .withMessage(ErrorMessages.VALIDATION_ERROR_VALUE_IS_ZERO_OR_NEGATIVE);
 
     assertThatExceptionOfType(IllegalArgumentException.class)
       .isThrownBy(() -> new Money(BigDecimal.valueOf(-10.0)))
-      .withMessage(ErrorMessages.VALIDATION_ERROR_VALUE_IS_NEGATIVE);
+      .withMessage(ErrorMessages.VALIDATION_ERROR_VALUE_IS_ZERO_OR_NEGATIVE);
   }
 
   @Test

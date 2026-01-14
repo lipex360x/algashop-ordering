@@ -6,6 +6,8 @@ import java.util.Objects;
 
 public record FullName(String firstName, String lastName) {
 
+  public static final FullName ANONYMOUS = new FullName("Anonymous", "Anonymous");
+
   public FullName(String firstName, String lastName) {
     Objects.requireNonNull(firstName, ErrorMessages.VALIDATION_ERROR_FIRST_NAME_IS_NULL);
     Objects.requireNonNull(lastName, ErrorMessages.VALIDATION_ERROR_LAST_NAME_IS_NULL);

@@ -1,133 +1,172 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
-
+import com.algaworks.algashop.ordering.domain.builder.BillingInfoDataBuilder;
+import com.algaworks.algashop.ordering.domain.builder.OrderDataBuilder;
+import com.algaworks.algashop.ordering.domain.builder.OrderItemDataBuilder;
+import com.algaworks.algashop.ordering.domain.builder.ShippingInfoDataBuilder;
 import com.algaworks.algashop.ordering.domain.exception.OrderInvalidShippingDeliveryDateException;
 import com.algaworks.algashop.ordering.domain.exception.OrderStatusCannotBeChangedException;
-import com.algaworks.algashop.ordering.domain.mock.AddressMock;
-import com.algaworks.algashop.ordering.domain.mock.DocumentMock;
-import com.algaworks.algashop.ordering.domain.mock.FullNameMock;
-import com.algaworks.algashop.ordering.domain.mock.PhoneMock;
-import com.algaworks.algashop.ordering.domain.valueobject.Address;
+import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
 import com.algaworks.algashop.ordering.domain.valueobject.BillingInfo;
-import com.algaworks.algashop.ordering.domain.valueobject.Document;
-import com.algaworks.algashop.ordering.domain.valueobject.FullName;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
-import com.algaworks.algashop.ordering.domain.valueobject.Phone;
 import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.ShippingInfo;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
-import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
-import net.datafaker.Faker;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
+import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertWith;
 
 class OrderTest {
 
-  static Faker faker = new Faker(Locale.US);
+  private static final CustomFaker customFaker = new CustomFaker();
 
   @Test
-  void shouldGenerate() {
-    Order order = Order.draft(new CustomerId());
-    assertThat(order.status()).isEqualTo(OrderStatus.DRAFT);
+  void shouldCreateDraft() {
+    CustomerId customerId = customFaker.valueObject().customerId();
+    Order order = Order.draft(customerId);
+    String[] nullProperties = new String[]{
+      "id",
+      "customerId",
+      "totalAmount",
+      "totalItems",
+      "status",
+      "shippingCost",
+      "items"
+    };
+
+    assertWith(order,
+      o -> assertThat(o.isDraft()).isTrue(),
+      o -> assertThat(o.customerId()).isEqualTo(customerId),
+      o -> assertThat(o.totalAmount()).isEqualTo(Money.ZERO),
+      o -> assertThat(o.totalItems()).isEqualTo(Quantity.ZERO),
+      o -> assertThat(o.shippingCost()).isEqualTo(Money.ZERO),
+      o -> assertThat(o.items()).isEmpty(),
+      o -> assertThat(o).hasAllNullFieldsOrPropertiesExcept(nullProperties)
+    );
   }
 
   @Test
   void shouldAddItem() {
-    Order order = Order.draft(new CustomerId());
+    CustomerId customerId = customFaker.valueObject().customerId();
+    Order order = Order.draft(customerId);
 
-    ProductName product1 = new ProductName("Product 1");
-    ProductName product2 = new ProductName("Product 2");
-    ProductName product3 = new ProductName("Product 3");
+    ProductName productName1 = customFaker.valueObject().productName();
+    ProductName productName2 = customFaker.valueObject().productName();
+    ProductName productName3 = customFaker.valueObject().productName();
 
     assertThat(order.items()).isEmpty();
 
     order.addItem(
-      new ProductId(),
-      product1,
-      new Money(faker.commerce().price()),
-      new Quantity(3)
+      customFaker.valueObject().productId(),
+      productName1,
+      customFaker.valueObject().money(),
+      customFaker.valueObject().quantity(2, 4)
     );
 
     order.addItem(
-      new ProductId(),
-      product2,
-      new Money(faker.commerce().price()),
-      new Quantity(2)
+      customFaker.valueObject().productId(),
+      productName2,
+      customFaker.valueObject().money(),
+      customFaker.valueObject().quantity(1, 4)
     );
 
     order.addItem(
-      new ProductId(),
-      product3,
-      new Money(faker.commerce().price()),
-      new Quantity(4)
+      customFaker.valueObject().productId(),
+      productName3,
+      customFaker.valueObject().money(),
+      customFaker.valueObject().quantity(3, 9)
     );
 
+    assertThat(order.items()).hasSize(3);
+    assertThat(order.items()).allSatisfy(item -> assertThat(item.id()).isNotNull());
     assertThat(order.items())
-      .hasSize(3)
-      .allSatisfy(item -> assertThat(item.id()).isNotNull())
       .extracting(OrderItem::productName)
       .extracting(ProductName::value)
-      .containsExactlyInAnyOrder(product1.value(), product2.value(), product3.value());
+      .containsExactlyInAnyOrder(productName1.value(), productName2.value(), productName3.value());
   }
 
   @Test
   void shouldGenerateExceptionWhenTryToChangeItemSet() {
-    Order order = Order.draft(new CustomerId());
-
-    order.addItem(
-      new ProductId(),
-      new ProductName(faker.commerce().productName()),
-      new Money(faker.commerce().price()),
-      new Quantity(faker.number().positive())
-    );
-
-    Set<OrderItem> items = order.items();
+    Order order = OrderDataBuilder.builder().build();
+    Set<OrderItem> item = order.items();
 
     assertThatExceptionOfType(UnsupportedOperationException.class)
-      .isThrownBy(items::clear);
+      .isThrownBy(item::clear);
   }
 
   @Test
-  void shouldCalculateTotals() {
-    Order order = Order.draft(new CustomerId());
+  void shouldCalculateTotalsWhenOrderHasItems() {
+    CustomerId customerId = customFaker.valueObject().customerId();
+    Order order = OrderDataBuilder.builder(Order.draft(customerId)).build();
 
+    OrderItem orderItem1 = OrderItemDataBuilder.builder().buildNew();
     order.addItem(
-      new ProductId(),
-      new ProductName(faker.commerce().productName()),
-      new Money("10"),
-      new Quantity(2)
+      orderItem1.productId(),
+      orderItem1.productName(),
+      orderItem1.price(),
+      orderItem1.quantity()
     );
 
+    OrderItem orderItem2 = OrderItemDataBuilder.builder().buildNew();
     order.addItem(
-      new ProductId(),
-      new ProductName(faker.commerce().productName()),
-      new Money("20"),
-      new Quantity(5)
+      orderItem2.productId(),
+      orderItem2.productName(),
+      orderItem2.price(),
+      orderItem2.quantity()
     );
 
-    assertThat(order.totalAmount()).isEqualTo(new Money("120"));
-    assertThat(order.totalItems()).isEqualTo(new Quantity(7));
+    Quantity expectedTotalQuantity = orderItem1.quantity().add(orderItem2.quantity());
+    Money shippingCost = Optional.ofNullable(order.shippingCost()).orElse(Money.ZERO);
+    Money expectedTotalAmount = orderItem1.totalAmount()
+      .add(orderItem2.totalAmount())
+      .add(shippingCost);
+
+    assertThat(order.totalAmount()).isEqualTo(expectedTotalAmount);
+    assertThat(order.totalItems()).isEqualTo(expectedTotalQuantity);
+
   }
 
   @Test
-  void shouldChangeStatusOrderFromDraftToPlaced() {
-    Order order = Order.draft(new CustomerId());
+  void shouldPlaceAnOrder() {
+    CustomerId customerId = customFaker.valueObject().customerId();
+    Order order = OrderDataBuilder.builder(Order.draft(customerId))
+      .withBillingInfo(() -> BillingInfoDataBuilder.builder().buildNew())
+      .withShippingInfo(() -> ShippingInfoDataBuilder.builder().buildNew())
+      .withExpectedDeliveryDate(() -> customFaker.timeAndDate().birthday())
+      .withShippingCost(() -> customFaker.valueObject().money())
+      .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
+      .withItems(() -> OrderItemDataBuilder.builder()
+        .buildExistingList(customFaker.number().numberBetween(1, 5)))
+      .build();
+
     order.place();
+
     assertThat(order.isPlaced()).isTrue();
+    assertThat(order.placedAt()).isNotNull();
   }
 
   @Test
   void shouldThrowExceptionWhenChangeStatusOrderFromPlacedToPlaced() {
-    Order order = Order.draft(new CustomerId());
-    order.place();
+    CustomerId customerId = customFaker.valueObject().customerId();
+    Order order = OrderDataBuilder.builder(Order.draft(customerId))
+      .withStatus(() -> OrderStatus.PLACED)
+      .withBillingInfo(() -> BillingInfoDataBuilder.builder().buildNew())
+      .withShippingInfo(() -> ShippingInfoDataBuilder.builder().buildNew())
+      .withExpectedDeliveryDate(() -> customFaker.timeAndDate().birthday())
+      .withShippingCost(() -> customFaker.valueObject().money())
+      .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
+      .withItems(() -> OrderItemDataBuilder.builder()
+        .buildExistingList(customFaker.number().numberBetween(1, 5)))
+      .build();
+
     assertThatExceptionOfType(OrderStatusCannotBeChangedException.class)
       .isThrownBy(order::place)
       .withMessage(String.format("Cannot change order %S from status PLACED to PLACED", order.id()));
@@ -135,94 +174,94 @@ class OrderTest {
 
   @Test
   void shouldChangePaymentMethod() {
-    Order order = Order.draft(new CustomerId());
+    CustomerId customerId = customFaker.valueObject().customerId();
+    Order order = OrderDataBuilder.builder(Order.draft(customerId)).build();
+
     assertThat(order.paymentMethod()).isNull();
+
     order.changePaymentMethod(PaymentMethod.CREDIT_CARD);
+
     assertThat(order.paymentMethod()).isEqualTo(PaymentMethod.CREDIT_CARD);
   }
 
   @Test
   void shouldChangeBillingInfo() {
-    Order order = Order.draft(new CustomerId());
+    CustomerId customerId = customFaker.valueObject().customerId();
+    Order order = OrderDataBuilder.builder(Order.draft(customerId)).build();
 
-    Address address = AddressMock.build();
-    Document document = DocumentMock.build();
-    Phone phone = PhoneMock.build();
-    FullName fullName = FullNameMock.build();
+    assertThat(order.billing()).isNull();
 
-    BillingInfo billingInfo = BillingInfo.builder()
-      .address(address)
-      .document(document)
-      .phone(phone)
-      .fullName(fullName)
-      .build();
+    BillingInfo billing = BillingInfoDataBuilder.builder().buildNew();
+    order.changeBillingInfo(billing);
 
-    order.changeBillingInfo(billingInfo);
-
-    BillingInfo expectedBillingInfo = BillingInfo.builder()
-      .address(address)
-      .document(document)
-      .phone(phone)
-      .fullName(fullName)
-      .build();
-
-    assertThat(order.billing()).isEqualTo(expectedBillingInfo);
+    assertThat(order.billing()).isEqualTo(billing);
   }
 
   @Test
   void shouldChangeShippingInfo() {
-    Address address = AddressMock.build();
-    Document document = DocumentMock.build();
-    Phone phone = PhoneMock.build();
-    FullName fullName = FullNameMock.build();
-
-    ShippingInfo shippingInfo = ShippingInfo.builder()
-      .address(address)
-      .document(document)
-      .phone(phone)
-      .fullName(fullName)
-      .build();
-
-    Order order = Order.draft(new CustomerId());
-    Money shippingCost = Money.ZERO;
-    LocalDate expectedDeliveryDate = LocalDate.now().plusDays(1);
-    order.changeShipping(shippingInfo, shippingCost, expectedDeliveryDate);
-
-    ShippingInfo expectedShippingInfo = ShippingInfo.builder()
-      .address(address)
-      .document(document)
-      .phone(phone)
-      .fullName(fullName)
-      .build();
+    CustomerId customerId = customFaker.valueObject().customerId();
+    Order order = OrderDataBuilder.builder(Order.draft(customerId)).build();
 
     assertWith(order,
-      o -> assertThat(o.shipping()).isEqualTo(expectedShippingInfo),
+      o -> assertThat(o.shipping()).isNull(),
+      o -> assertThat(o.shippingCost()).isEqualTo(Money.ZERO),
+      o -> assertThat(o.expectedDeliveryDate()).isNull()
+    );
+
+    ShippingInfo shippingInfo = ShippingInfoDataBuilder.builder().buildNew();
+    Money shippingCost = customFaker.valueObject().money();
+    LocalDate expectedDeliveryDate = LocalDate.ofInstant(customFaker.timeAndDate().future(), UTC);
+
+    order.changeShippingInfo(shippingInfo, shippingCost, expectedDeliveryDate);
+
+    assertWith(order,
+      o -> assertThat(o.shipping()).isEqualTo(shippingInfo),
       o -> assertThat(o.shippingCost()).isEqualTo(shippingCost),
       o -> assertThat(o.expectedDeliveryDate()).isEqualTo(expectedDeliveryDate)
     );
-
   }
 
   @Test
   void shouldTrowExceptionWhenChangeShippingInfoWithPastDate() {
-    Address address = AddressMock.build();
-    Document document = DocumentMock.build();
-    Phone phone = PhoneMock.build();
-    FullName fullName = FullNameMock.build();
+    CustomerId customerId = customFaker.valueObject().customerId();
+    Order order = OrderDataBuilder.builder(Order.draft(customerId)).build();
 
-    ShippingInfo shippingInfo = ShippingInfo.builder()
-      .address(address)
-      .document(document)
-      .phone(phone)
-      .fullName(fullName)
+    assertWith(order,
+      o -> assertThat(o.shipping()).isNull(),
+      o -> assertThat(o.shippingCost()).isEqualTo(Money.ZERO),
+      o -> assertThat(o.expectedDeliveryDate()).isNull()
+    );
+
+    ShippingInfo shippingInfo = ShippingInfoDataBuilder.builder().buildNew();
+    Money shippingCost = customFaker.valueObject().money();
+    LocalDate expectedDeliveryDate = LocalDate.ofInstant(customFaker.timeAndDate().past(), UTC);
+
+    assertThatExceptionOfType(OrderInvalidShippingDeliveryDateException.class)
+      .isThrownBy(() -> order.changeShippingInfo(shippingInfo, shippingCost, expectedDeliveryDate))
+      .withMessage(String.format("Order %s expected date cannot be in the past", order.id()));
+  }
+
+  @Test
+  void shouldChangeAnOrderToPaid() {
+    CustomerId customerId = customFaker.valueObject().customerId();
+    Order order = OrderDataBuilder.builder(Order.draft(customerId))
+      .withStatus(() -> OrderStatus.PLACED)
+      .withBillingInfo(() -> BillingInfoDataBuilder.builder().buildNew())
+      .withShippingInfo(() -> ShippingInfoDataBuilder.builder().buildNew())
+      .withExpectedDeliveryDate(() -> customFaker.timeAndDate().birthday())
+      .withShippingCost(() -> customFaker.valueObject().money())
+      .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
+      .withItems(() -> OrderItemDataBuilder.builder()
+        .buildExistingList(customFaker.number().numberBetween(1, 5)))
       .build();
 
-    Order order = Order.draft(new CustomerId());
-    Money shippingCost = Money.ZERO;
-    LocalDate expectedDeliveryDate = LocalDate.now().minusDays(1);
-    assertThatExceptionOfType(OrderInvalidShippingDeliveryDateException.class)
-      .isThrownBy(() -> order.changeShipping(shippingInfo, shippingCost, expectedDeliveryDate))
-      .withMessage(String.format("Order %s expected date cannot be in the past", order.id()));
+    assertThat(order.isPlaced()).isTrue();
+    assertThat(order.isPaid()).isFalse();
+
+    order.markAsPaid();
+    assertThat(order.isPaid()).isTrue();
+    assertThat(order.paidAt()).isNotNull();
+
   }
 }
 

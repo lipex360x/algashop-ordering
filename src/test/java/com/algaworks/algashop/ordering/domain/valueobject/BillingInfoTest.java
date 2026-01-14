@@ -1,10 +1,7 @@
 package com.algaworks.algashop.ordering.domain.valueobject;
 
 import com.algaworks.algashop.ordering.domain.exception.ErrorMessages;
-import com.algaworks.algashop.ordering.domain.mock.AddressMock;
-import com.algaworks.algashop.ordering.domain.mock.DocumentMock;
-import com.algaworks.algashop.ordering.domain.mock.FullNameMock;
-import com.algaworks.algashop.ordering.domain.mock.PhoneMock;
+import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +11,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 
 class BillingInfoTest {
 
+  private static final CustomFaker customFaker = new CustomFaker();
+
   private FullName fullName;
   private Document document;
   private Phone phone;
@@ -21,10 +20,10 @@ class BillingInfoTest {
 
   @BeforeEach
   void setup() {
-    fullName = FullNameMock.build();
-    document = DocumentMock.build();
-    phone = PhoneMock.build();
-    address = AddressMock.build();
+    fullName = customFaker.valueObject().fullName();
+    document = customFaker.valueObject().document();
+    phone = customFaker.valueObject().phone();
+    address = customFaker.valueObject().address();
   }
 
   @Test

@@ -33,10 +33,18 @@ public class ErrorMessages {
 
   public static final String VALIDATION_ERROR_LOYALTY_POINTS_IS_NULL = "Loyalty Points cannot be null";
 
-  public static final String ERROR_CUSTOMER_ARCHIVED = "Customer is archived. It cannot be changed";
+  public static final String ERROR_CUSTOMER_ARCHIVED
+    = "Customer is archived. It cannot be changed";
 
-  public static final String ERROR_ORDER_STATUS_CANNOT_BE_CHANGED = "Cannot change order %s from status %s to %s";
+  public static final String ERROR_ORDER_STATUS_CANNOT_BE_CHANGED
+    = "Cannot change order %s from status %s to %s";
 
   public static final String ERROR_ORDER_DELIVERY_DATE_CANNOT_BE_IN_THE_PAST
     = "Order %s expected date cannot be in the past";
+
+  public static final String ERROR_ORDER_CANNOT_BE_PLACED
+    = "Order %s cannot be in closed. Reason: %s";
+
+  public static final String VALIDATION_ITEMS_LIST_IS_EMPTY
+    = "Order items cannot be empty";
 }
