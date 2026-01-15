@@ -4,6 +4,8 @@ import com.algaworks.algashop.ordering.domain.builder.BillingInfoDataBuilder;
 import com.algaworks.algashop.ordering.domain.builder.OrderDataBuilder;
 import com.algaworks.algashop.ordering.domain.builder.OrderItemDataBuilder;
 import com.algaworks.algashop.ordering.domain.builder.ShippingInfoDataBuilder;
+import com.algaworks.algashop.ordering.domain.exception.ErrorMessages;
+import com.algaworks.algashop.ordering.domain.exception.OrderCannotBePlacedException;
 import com.algaworks.algashop.ordering.domain.exception.OrderInvalidShippingDeliveryDateException;
 import com.algaworks.algashop.ordering.domain.exception.OrderStatusCannotBeChangedException;
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
@@ -31,7 +33,8 @@ class OrderTest {
   @Test
   void shouldCreateDraft() {
     CustomerId customerId = customFaker.valueObject().customerId();
-    Order order = Order.draft(customerId);
+    Order order = OrderDataBuilder.builder(Order.draft(customerId)).build();
+
     String[] nullProperties = new String[]{
       "id",
       "customerId",
@@ -54,9 +57,53 @@ class OrderTest {
   }
 
   @Test
+  void shouldThrowExceptionWhenCreateAnInvalidOrder() {
+    CustomerId customerId = customFaker.valueObject().customerId();
+
+    Order order = OrderDataBuilder.builder(Order.draft(customerId))
+      .withBillingInfo(() -> BillingInfoDataBuilder.builder().buildNew())
+      .withExpectedDeliveryDate(() -> customFaker.timeAndDate().birthday())
+      .withShippingCost(() -> customFaker.valueObject().money())
+      .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
+      .withItems(() -> OrderItemDataBuilder.builder()
+        .buildExistingList(customFaker.number().numberBetween(1, 5)))
+      .build();
+
+    assertThatExceptionOfType(OrderCannotBePlacedException.class)
+      .isThrownBy(order::place)
+      .withMessage(String.format(ErrorMessages.VALIDATION_ORDER_NO_SHIPPING_INFO, order.id()));
+
+    order = OrderDataBuilder.builder(Order.draft(customerId))
+      .withShippingInfo(() -> ShippingInfoDataBuilder.builder().buildNew())
+      .withExpectedDeliveryDate(() -> customFaker.timeAndDate().birthday())
+      .withShippingCost(() -> customFaker.valueObject().money())
+      .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
+      .withItems(() -> OrderItemDataBuilder.builder()
+        .buildExistingList(customFaker.number().numberBetween(1, 5)))
+      .build();
+
+    assertThatExceptionOfType(OrderCannotBePlacedException.class)
+      .isThrownBy(order::place)
+      .withMessage(String.format(ErrorMessages.VALIDATION_ORDER_NO_BILLING_INFO, order.id()));
+
+    order = OrderDataBuilder.builder(Order.draft(customerId))
+      .withShippingInfo(() -> ShippingInfoDataBuilder.builder().buildNew())
+      .withBillingInfo(() -> BillingInfoDataBuilder.builder().buildNew())
+      .withShippingCost(() -> customFaker.valueObject().money())
+      .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
+      .withItems(() -> OrderItemDataBuilder.builder()
+        .buildExistingList(customFaker.number().numberBetween(1, 5)))
+      .build();
+
+    assertThatExceptionOfType(OrderCannotBePlacedException.class)
+      .isThrownBy(order::place)
+      .withMessage(String.format(ErrorMessages.VALIDATION_ORDER_INVALID_EXPECTED_DATE, order.id()));
+  }
+
+  @Test
   void shouldAddItem() {
     CustomerId customerId = customFaker.valueObject().customerId();
-    Order order = Order.draft(customerId);
+    Order order = OrderDataBuilder.builder(Order.draft(customerId)).build();
 
     ProductName productName1 = customFaker.valueObject().productName();
     ProductName productName2 = customFaker.valueObject().productName();

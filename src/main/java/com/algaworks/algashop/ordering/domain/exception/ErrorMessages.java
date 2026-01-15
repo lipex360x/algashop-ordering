@@ -45,6 +45,23 @@ public class ErrorMessages {
   public static final String ERROR_ORDER_CANNOT_BE_PLACED
     = "Order %s cannot be in closed. Reason: %s";
 
-  public static final String VALIDATION_ITEMS_LIST_IS_EMPTY
-    = "Order items cannot be empty";
+  public static final String VALIDATION_ORDER_ITEMS_LIST_IS_EMPTY
+    = "Order %s - Items cannot be empty";
+
+  public static final String VALIDATION_ORDER_NO_SHIPPING_INFO
+    = "Order %s - Shipping info cannot be empty";
+
+  public static final String VALIDATION_ORDER_NO_BILLING_INFO
+    = "Order %s - Billing info cannot be empty";
+
+  public static final String VALIDATION_ORDER_INVALID_SHIPPING_COST
+    = "Order %s - Invalid shipping cost";
+
+  public static final String VALIDATION_ORDER_INVALID_EXPECTED_DATE
+    = "Order %s - Invalid expected date";
+
+  public static final String VALIDATION_ORDER_NO_PAYMENT_METHOD
+    = "Order %s - Payment method cannot be empty";
+
+
 }

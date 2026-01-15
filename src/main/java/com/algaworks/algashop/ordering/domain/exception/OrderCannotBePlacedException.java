@@ -4,7 +4,45 @@ import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
 
 public class OrderCannotBePlacedException extends DomainException {
 
-  public OrderCannotBePlacedException(OrderId orderId, String reason) {
-    super(String.format(ErrorMessages.ERROR_ORDER_CANNOT_BE_PLACED, orderId, reason));
+  private OrderCannotBePlacedException(String message) {
+    super(message);
   }
+
+  public static OrderCannotBePlacedException noItems(OrderId id) {
+    return new OrderCannotBePlacedException(
+      String.format(ErrorMessages.VALIDATION_ORDER_ITEMS_LIST_IS_EMPTY, id)
+    );
+  }
+
+  public static OrderCannotBePlacedException noShippingInfo(OrderId id) {
+    return new OrderCannotBePlacedException(
+      String.format(ErrorMessages.VALIDATION_ORDER_NO_SHIPPING_INFO, id)
+    );
+  }
+
+  public static OrderCannotBePlacedException noBillingInfo(OrderId id) {
+    return new OrderCannotBePlacedException(
+      String.format(ErrorMessages.VALIDATION_ORDER_NO_BILLING_INFO, id)
+    );
+  }
+
+  public static OrderCannotBePlacedException invalidShippingCost(OrderId id) {
+    return new OrderCannotBePlacedException(
+      String.format(ErrorMessages.VALIDATION_ORDER_INVALID_SHIPPING_COST, id)
+    );
+  }
+
+  public static OrderCannotBePlacedException invalidExpectedDeliveryDate(OrderId id) {
+    return new OrderCannotBePlacedException(
+      String.format(ErrorMessages.VALIDATION_ORDER_INVALID_EXPECTED_DATE, id)
+    );
+  }
+
+  public static OrderCannotBePlacedException noPaymentMethod(OrderId id) {
+    return new OrderCannotBePlacedException(
+      String.format(ErrorMessages.VALIDATION_ORDER_NO_PAYMENT_METHOD, id)
+    );
+  }
+
+
 }
