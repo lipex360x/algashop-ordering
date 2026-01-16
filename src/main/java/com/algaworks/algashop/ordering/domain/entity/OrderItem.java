@@ -1,6 +1,7 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
+import com.algaworks.algashop.ordering.domain.valueobject.Product;
 import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
@@ -27,37 +28,31 @@ public class OrderItem {
 
   @Builder(builderClassName = "ExistingOrderItemBuilder", builderMethodName = "existing")
   public OrderItem(
-    OrderItemId id,
-    OrderId orderId,
-    ProductId productId,
-    ProductName productName,
-    Money price,
-    Quantity quantity,
-    Money totalAmount
+    @NonNull OrderItemId id,
+    @NonNull OrderId orderId,
+    @NonNull Product product,
+    @NonNull Quantity quantity,
+    @NonNull Money totalAmount
   ) {
     this.setId(id);
     this.setOrderId(orderId);
-    this.setProductId(productId);
-    this.setProductName(productName);
-    this.setPrice(price);
+    this.setProductId(product.id());
+    this.setProductName(product.name());
+    this.setPrice(product.price());
     this.setQuantity(quantity);
     this.setTotalAmount(totalAmount);
   }
 
   @Builder(builderClassName = "BrandNewOrderItemBuilder", builderMethodName = "brandNew")
   private static OrderItem createBrandNew(
-    OrderId orderId,
-    ProductId productId,
-    ProductName productName,
-    Money price,
-    Quantity quantity
+    @NonNull OrderId orderId,
+    @NonNull Product product,
+    @NonNull Quantity quantity
   ) {
     OrderItem orderItem = new OrderItem(
       new OrderItemId(),
       orderId,
-      productId,
-      productName,
-      price,
+      product,
       quantity,
       Money.ZERO
     );

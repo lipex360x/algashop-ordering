@@ -3,6 +3,7 @@ package com.algaworks.algashop.ordering.domain.builder;
 import com.algaworks.algashop.ordering.domain.entity.OrderItem;
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
+import com.algaworks.algashop.ordering.domain.valueobject.Product;
 import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
@@ -33,6 +34,9 @@ public class OrderItemDataBuilder {
   private Supplier<OrderId> orderId = () -> customFaker.valueObject().orderId();
 
   @With
+  private Supplier<Product> product = () -> customFaker.valueObject().product();
+
+  @With
   private Supplier<ProductId> productId = () -> customFaker.valueObject().productId();
 
   @With
@@ -54,9 +58,7 @@ public class OrderItemDataBuilder {
   public OrderItem buildNew() {
     return OrderItem.brandNew()
       .orderId(orderId.get())
-      .productId(productId.get())
-      .productName(productName.get())
-      .price(price.get())
+      .product(product.get())
       .quantity(quantity.get())
       .build();
   }
@@ -65,9 +67,7 @@ public class OrderItemDataBuilder {
     return OrderItem.existing()
       .id(id.get())
       .orderId(orderId.get())
-      .productId(productId.get())
-      .productName(productName.get())
-      .price(price.get())
+      .product(product.get())
       .quantity(quantity.get())
       .totalAmount(totalAmount.get())
       .build();

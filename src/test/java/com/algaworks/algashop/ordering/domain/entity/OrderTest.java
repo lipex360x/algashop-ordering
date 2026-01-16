@@ -11,11 +11,11 @@ import com.algaworks.algashop.ordering.domain.exception.OrderStatusCannotBeChang
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
 import com.algaworks.algashop.ordering.domain.valueobject.BillingInfo;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
+import com.algaworks.algashop.ordering.domain.valueobject.Product;
 import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.ShippingInfo;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
-import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -106,31 +106,25 @@ class OrderTest {
     CustomerId customerId = customFaker.valueObject().customerId();
     Order order = OrderDataBuilder.builder(Order.draft(customerId)).build();
 
-    ProductName productName1 = customFaker.valueObject().productName();
-    ProductName productName2 = customFaker.valueObject().productName();
-    ProductName productName3 = customFaker.valueObject().productName();
+    Product product1 = customFaker.valueObject().product();
+    Product product2 = customFaker.valueObject().product();
+    Product product3 = customFaker.valueObject().product();
 
     assertThat(order.items()).isEmpty();
 
     order.addItem(
-      customFaker.valueObject().productId(),
-      productName1,
-      customFaker.valueObject().money(),
+      product1,
       customFaker.valueObject().quantity(2, 4)
     );
 
     order.addItem(
-      customFaker.valueObject().productId(),
-      productName2,
-      customFaker.valueObject().money(),
+      product2,
       customFaker.valueObject().quantity(1, 4)
     );
 
     order.addItem(
-      customFaker.valueObject().productId(),
-      productName3,
-      customFaker.valueObject().money(),
-      customFaker.valueObject().quantity(3, 9)
+      product3,
+      customFaker.valueObject().quantity(1, 4)
     );
 
     assertThat(order.items()).hasSize(3);
@@ -138,7 +132,11 @@ class OrderTest {
     assertThat(order.items())
       .extracting(OrderItem::productName)
       .extracting(ProductName::value)
-      .containsExactlyInAnyOrder(productName1.value(), productName2.value(), productName3.value());
+      .containsExactlyInAnyOrder(
+        product1.name().value(),
+        product2.name().value(),
+        product3.name().value()
+      );
   }
 
   @Test
@@ -155,19 +153,26 @@ class OrderTest {
     CustomerId customerId = customFaker.valueObject().customerId();
     Order order = OrderDataBuilder.builder(Order.draft(customerId)).build();
 
-    OrderItem orderItem1 = OrderItemDataBuilder.builder().buildNew();
+    Product product1 = customFaker.valueObject().product(new Money("10"));
+    Product product2 = customFaker.valueObject().product(new Money("20"));
+
+    OrderItem orderItem1 = OrderItemDataBuilder.builder()
+      .withQuantity(() -> new Quantity(2))
+      .withTotalAmount(() -> new Money("20"))
+      .buildExisting();
+
     order.addItem(
-      orderItem1.productId(),
-      orderItem1.productName(),
-      orderItem1.price(),
+      product1,
       orderItem1.quantity()
     );
 
-    OrderItem orderItem2 = OrderItemDataBuilder.builder().buildNew();
+    OrderItem orderItem2 = OrderItemDataBuilder.builder()
+      .withQuantity(() -> new Quantity(1))
+      .withTotalAmount(() -> new Money("20"))
+      .buildExisting();
+
     order.addItem(
-      orderItem2.productId(),
-      orderItem2.productName(),
-      orderItem2.price(),
+      product2,
       orderItem2.quantity()
     );
 
@@ -315,11 +320,10 @@ class OrderTest {
   void shouldChangeItemQuantity() {
     CustomerId customerId = customFaker.valueObject().customerId();
     Order order = Order.draft(customerId);
+    Product product = customFaker.valueObject().product(new Money("10"));
 
     order.addItem(
-      new ProductId(),
-      customFaker.valueObject().productName(),
-      new Money("10.00"),
+      product,
       new Quantity(3)
     );
 

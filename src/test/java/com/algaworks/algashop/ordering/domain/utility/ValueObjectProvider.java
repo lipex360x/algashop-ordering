@@ -8,6 +8,7 @@ import com.algaworks.algashop.ordering.domain.valueobject.FullName;
 import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.Phone;
+import com.algaworks.algashop.ordering.domain.valueobject.Product;
 import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.ZipCode;
@@ -106,4 +107,41 @@ public class ValueObjectProvider extends AbstractProvider<BaseProviders> {
   public ProductName productName() {
     return new ProductName(faker.book().title());
   }
+
+  public Product product() {
+    return Product.builder()
+      .id(new ProductId())
+      .name(new ProductName(faker.book().title()))
+      .price(money())
+      .inStock(true)
+      .build();
+  }
+
+  public Product product(ProductName name) {
+    return Product.builder()
+      .id(new ProductId())
+      .name(name)
+      .price(money())
+      .inStock(true)
+      .build();
+  }
+
+  public Product product(Money price) {
+    return Product.builder()
+      .id(new ProductId())
+      .name(new ProductName(faker.book().title()))
+      .price(price)
+      .inStock(true)
+      .build();
+  }
+
+  public Product product(Boolean inStock) {
+    return Product.builder()
+      .id(new ProductId())
+      .name(new ProductName(faker.book().title()))
+      .price(money())
+      .inStock(inStock)
+      .build();
+  }
+
 }
