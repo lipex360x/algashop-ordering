@@ -66,6 +66,11 @@ public class OrderItem {
     return orderItem;
   }
 
+  void changeQuantity(@NonNull Quantity quantity) {
+    this.setQuantity(quantity);
+    this.recalculateTotals();
+  }
+
   public OrderItemId id() {
     return id;
   }
@@ -125,4 +130,6 @@ public class OrderItem {
   private void setTotalAmount(@NonNull Money totalAmount) {
     this.totalAmount = totalAmount;
   }
+
+
 }

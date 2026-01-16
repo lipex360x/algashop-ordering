@@ -1,6 +1,7 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.exception.OrderCannotBePlacedException;
+import com.algaworks.algashop.ordering.domain.exception.OrderDoesNotContainOrderItemException;
 import com.algaworks.algashop.ordering.domain.exception.OrderInvalidShippingDeliveryDateException;
 import com.algaworks.algashop.ordering.domain.exception.OrderStatusCannotBeChangedException;
 import com.algaworks.algashop.ordering.domain.valueobject.BillingInfo;
@@ -10,6 +11,7 @@ import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.ShippingInfo;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
+import com.algaworks.algashop.ordering.domain.valueobject.id.OrderItemId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -156,6 +158,15 @@ public class Order {
     this.setExpectedDeliveryDate(expectedDeliveryDate);
   }
 
+  public void changeItemQuantity(
+    @NonNull OrderItemId orderItemId,
+    @NonNull Quantity quantity
+  ) {
+    OrderItem orderItem = this.findOrderItem(orderItemId);
+    orderItem.changeQuantity(quantity);
+    recalculateTotals();
+  }
+
   public boolean isDraft() {
     return OrderStatus.DRAFT.equals(this.status());
   }
@@ -258,6 +269,13 @@ public class Order {
     if (this.billing() == null) throw OrderCannotBePlacedException.noBillingInfo(this.id());
     if (this.items().isEmpty() || this.items() == null)
       throw OrderCannotBePlacedException.noItems(this.id());
+  }
+
+  private OrderItem findOrderItem(@NonNull OrderItemId orderItemId) {
+    return this.items().stream()
+      .filter(i -> i.id() == orderItemId)
+      .findFirst()
+      .orElseThrow(() -> new OrderDoesNotContainOrderItemException(this.id(), orderItemId));
   }
 
   private void setId(@NonNull OrderId id) {

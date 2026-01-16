@@ -15,6 +15,7 @@ import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.ShippingInfo;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
+import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -308,6 +309,33 @@ class OrderTest {
     order.markAsPaid();
     assertThat(order.isPaid()).isTrue();
     assertThat(order.paidAt()).isNotNull();
+  }
+
+  @Test
+  void shouldChangeItemQuantity() {
+    CustomerId customerId = customFaker.valueObject().customerId();
+    Order order = Order.draft(customerId);
+
+    order.addItem(
+      new ProductId(),
+      customFaker.valueObject().productName(),
+      new Money("10.00"),
+      new Quantity(3)
+    );
+
+    OrderItem orderItem = order.items().stream().iterator().next();
+
+    assertWith(order,
+      o -> assertThat(o.totalAmount()).isEqualTo(new Money("30")),
+      o -> assertThat(o.totalItems()).isEqualTo(new Quantity(3))
+    );
+
+    order.changeItemQuantity(orderItem.id(), new Quantity(5));
+
+    assertWith(order,
+      o -> assertThat(o.totalAmount()).isEqualTo(new Money("50")),
+      o -> assertThat(o.totalItems()).isEqualTo(new Quantity(5))
+    );
 
   }
 }

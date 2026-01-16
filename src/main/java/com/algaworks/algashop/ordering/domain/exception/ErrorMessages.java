@@ -36,6 +36,9 @@ public class ErrorMessages {
   public static final String ERROR_CUSTOMER_ARCHIVED
     = "Customer is archived. It cannot be changed";
 
+  public static final String ERROR_ORDER_ITEM_NOT_FOUND
+    = "Order ID: %s - Item ID %s not found to this order";
+
   public static final String ERROR_ORDER_STATUS_CANNOT_BE_CHANGED
     = "Cannot change order %s from status %s to %s";
 
