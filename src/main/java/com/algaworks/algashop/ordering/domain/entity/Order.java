@@ -4,7 +4,7 @@ import com.algaworks.algashop.ordering.domain.exception.OrderCannotBePlacedExcep
 import com.algaworks.algashop.ordering.domain.exception.OrderDoesNotContainOrderItemException;
 import com.algaworks.algashop.ordering.domain.exception.OrderInvalidShippingDeliveryDateException;
 import com.algaworks.algashop.ordering.domain.exception.OrderStatusCannotBeChangedException;
-import com.algaworks.algashop.ordering.domain.valueobject.BillingInfo;
+import com.algaworks.algashop.ordering.domain.valueobject.Billing;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.Product;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
@@ -39,7 +39,7 @@ public class Order {
   private OffsetDateTime cancelledAt;
   private OffsetDateTime readyAt;
 
-  private BillingInfo billing;
+  private Billing billing;
   private Shipping shipping;
 
   private OrderStatus status;
@@ -57,7 +57,7 @@ public class Order {
     OffsetDateTime paidAt,
     OffsetDateTime cancelledAt,
     OffsetDateTime readyAt,
-    BillingInfo billingInfo,
+    Billing billing,
     Shipping shipping,
     OrderStatus status,
     PaymentMethod paymentMethod,
@@ -71,7 +71,7 @@ public class Order {
     this.setPaidAt(paidAt);
     this.setCancelledAt(cancelledAt);
     this.setReadyAt(readyAt);
-    this.setBilling(billingInfo);
+    this.setBilling(billing);
     this.setShipping(shipping);
     this.setStatus(status);
     this.setPaymentMethod(paymentMethod);
@@ -128,7 +128,7 @@ public class Order {
     this.setPaymentMethod(paymentMethod);
   }
 
-  public void changeBillingInfo(@NonNull BillingInfo billing) {
+  public void changeBillingInfo(@NonNull Billing billing) {
     this.setBilling(billing);
   }
 
@@ -191,7 +191,7 @@ public class Order {
     return readyAt;
   }
 
-  public BillingInfo billing() {
+  public Billing billing() {
     return billing;
   }
 
@@ -282,7 +282,7 @@ public class Order {
     this.readyAt = readyAt;
   }
 
-  private void setBilling(BillingInfo billing) {
+  private void setBilling(Billing billing) {
     this.billing = billing;
   }
 

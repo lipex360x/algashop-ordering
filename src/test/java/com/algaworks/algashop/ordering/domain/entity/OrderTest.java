@@ -1,6 +1,6 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
-import com.algaworks.algashop.ordering.domain.builder.BillingInfoDataBuilder;
+import com.algaworks.algashop.ordering.domain.builder.BillingDataBuilder;
 import com.algaworks.algashop.ordering.domain.builder.OrderDataBuilder;
 import com.algaworks.algashop.ordering.domain.builder.OrderItemDataBuilder;
 import com.algaworks.algashop.ordering.domain.builder.ShippingDataBuilder;
@@ -10,7 +10,7 @@ import com.algaworks.algashop.ordering.domain.exception.OrderInvalidShippingDeli
 import com.algaworks.algashop.ordering.domain.exception.OrderStatusCannotBeChangedException;
 import com.algaworks.algashop.ordering.domain.exception.ProductOutOfStockException;
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
-import com.algaworks.algashop.ordering.domain.valueobject.BillingInfo;
+import com.algaworks.algashop.ordering.domain.valueobject.Billing;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.Product;
 import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
@@ -63,7 +63,7 @@ class OrderTest {
     CustomerId customerId = customFaker.valueObject().customerId();
 
     Order order = OrderDataBuilder.builder(Order.draft(customerId))
-      .withBillingInfo(() -> BillingInfoDataBuilder.builder().buildNew())
+      .withBillingInfo(() -> BillingDataBuilder.builder().build())
       .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
       .withItems(() -> OrderItemDataBuilder.builder()
         .buildExistingList(customFaker.number().numberBetween(1, 5)))
@@ -88,19 +88,6 @@ class OrderTest {
     assertThatExceptionOfType(OrderCannotBePlacedException.class)
       .isThrownBy(order::place)
       .withMessage(String.format(ErrorMessages.VALIDATION_ORDER_NO_BILLING_INFO, order.id()));
-
-//    order = OrderDataBuilder.builder(Order.draft(customerId))
-//      .withShippingInfo(() -> ShippingInfoDataBuilder.builder().buildNew())
-//      .withBillingInfo(() -> BillingInfoDataBuilder.builder().buildNew())
-//      .withShippingCost(() -> customFaker.valueObject().money())
-//      .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
-//      .withItems(() -> OrderItemDataBuilder.builder()
-//        .buildExistingList(customFaker.number().numberBetween(1, 5)))
-//      .build();
-//
-//    assertThatExceptionOfType(OrderCannotBePlacedException.class)
-//      .isThrownBy(order::place)
-//      .withMessage(String.format(ErrorMessages.VALIDATION_ORDER_INVALID_EXPECTED_DATE, order.id()));
   }
 
   @Test
@@ -116,7 +103,7 @@ class OrderTest {
 
     Order order = OrderDataBuilder.builder(Order.draft(customerId))
       .withShipping(() -> shippingInThePast)
-      .withBillingInfo(() -> BillingInfoDataBuilder.builder().buildNew())
+      .withBillingInfo(() -> BillingDataBuilder.builder().build())
       .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
       .withItems(() -> OrderItemDataBuilder.builder()
         .buildExistingList(customFaker.number().numberBetween(1, 5)))
@@ -221,7 +208,7 @@ class OrderTest {
   void shouldPlaceAnOrder() {
     CustomerId customerId = customFaker.valueObject().customerId();
     Order order = OrderDataBuilder.builder(Order.draft(customerId))
-      .withBillingInfo(() -> BillingInfoDataBuilder.builder().buildNew())
+      .withBillingInfo(() -> BillingDataBuilder.builder().build())
       .withShipping(() -> ShippingDataBuilder.builder().build())
       .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
       .withItems(() -> OrderItemDataBuilder.builder()
@@ -239,7 +226,7 @@ class OrderTest {
     CustomerId customerId = customFaker.valueObject().customerId();
     Order order = OrderDataBuilder.builder(Order.draft(customerId))
       .withStatus(() -> OrderStatus.PLACED)
-      .withBillingInfo(() -> BillingInfoDataBuilder.builder().buildNew())
+      .withBillingInfo(() -> BillingDataBuilder.builder().build())
       .withShipping(() -> ShippingDataBuilder.builder().build())
       .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
       .withItems(() -> OrderItemDataBuilder.builder()
@@ -274,7 +261,7 @@ class OrderTest {
 
     assertThat(order.billing()).isNull();
 
-    BillingInfo billing = BillingInfoDataBuilder.builder().buildNew();
+    Billing billing = BillingDataBuilder.builder().build();
     order.changeBillingInfo(billing);
 
     assertThat(order.billing()).isEqualTo(billing);
@@ -328,7 +315,7 @@ class OrderTest {
     CustomerId customerId = customFaker.valueObject().customerId();
     Order order = OrderDataBuilder.builder(Order.draft(customerId))
       .withStatus(() -> OrderStatus.PLACED)
-      .withBillingInfo(() -> BillingInfoDataBuilder.builder().buildNew())
+      .withBillingInfo(() -> BillingDataBuilder.builder().build())
       .withShipping(() -> ShippingDataBuilder.builder().build())
       .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
       .withItems(() -> OrderItemDataBuilder.builder()

@@ -30,7 +30,7 @@ public class Customer {
   private LoyaltyPoints loyaltyPoints;
   private Address address;
 
-  @Builder(builderClassName = "ExistingCustomerBuilder", builderMethodName = "existing")
+  @Builder(builderClassName = "ExistingCustomerBuilder", builderMethodName = "buildExisting")
   private Customer(
     CustomerId id,
     FullName fullName,
@@ -60,7 +60,7 @@ public class Customer {
     this.setAddress(address);
   }
 
-  @Builder(builderClassName = "BrandNewCustomerBuilder", builderMethodName = "brandNew")
+  @Builder(builderClassName = "BrandNewCustomerBuilder", builderMethodName = "buildNew")
   private static Customer createBrandNew(
     FullName fullName,
     BirthDate birthDate,

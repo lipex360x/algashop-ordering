@@ -2,6 +2,7 @@ package com.algaworks.algashop.ordering.domain.valueobject;
 
 import com.algaworks.algashop.ordering.domain.builder.ShippingDataBuilder;
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -14,6 +15,19 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 class ShippingTest {
 
   private static final CustomFaker customFaker = new CustomFaker();
+
+  private Recipient recipient;
+  private Address address;
+  private Money cost;
+  private LocalDate expectedDate;
+
+  @BeforeEach
+  void setup() {
+    recipient = customFaker.valueObject().recipient();
+    address = customFaker.valueObject().address();
+    cost = customFaker.valueObject().money(20, 100);
+    expectedDate = LocalDate.ofInstant(customFaker.timeAndDate().future(), UTC);
+  }
 
   @Test
   void shouldReturnShipping() {
@@ -53,11 +67,6 @@ class ShippingTest {
 
   @Test
   void shouldReturnCustomShipping() {
-    Recipient recipient = customFaker.valueObject().recipient();
-    Address address = customFaker.valueObject().address();
-    Money cost = customFaker.valueObject().money(20, 100);
-    LocalDate expectedDate = LocalDate.ofInstant(customFaker.timeAndDate().future(), UTC);
-
     Shipping shipping = ShippingDataBuilder.builder()
       .withRecipient(() -> recipient)
       .withAddress(() -> address)
@@ -75,10 +84,6 @@ class ShippingTest {
 
   @Test
   void shouldReturnCustomMockedShipping() {
-    Recipient recipient = customFaker.valueObject().recipient();
-    Address address = customFaker.valueObject().address();
-    Money cost = customFaker.valueObject().money(20, 100);
-    LocalDate expectedDate = LocalDate.ofInstant(customFaker.timeAndDate().future(), UTC);
 
     Shipping customShipping = Shipping.builder()
       .recipient(recipient)

@@ -66,7 +66,7 @@ public class CustomerDataBuilder {
   }
 
   public Customer buildNew() {
-    return Customer.brandNew()
+    return Customer.buildNew()
       .fullName(fullName.get())
       .birthDate(birthDate.get())
       .email(email.get())
@@ -78,7 +78,7 @@ public class CustomerDataBuilder {
   }
 
   public Customer buildExisting() {
-    return Customer.existing()
+    return Customer.buildExisting()
       .id(id.get())
       .fullName(fullName.get())
       .birthDate(birthDate.get())

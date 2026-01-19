@@ -5,7 +5,7 @@ import com.algaworks.algashop.ordering.domain.entity.OrderItem;
 import com.algaworks.algashop.ordering.domain.entity.OrderStatus;
 import com.algaworks.algashop.ordering.domain.entity.PaymentMethod;
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
-import com.algaworks.algashop.ordering.domain.valueobject.BillingInfo;
+import com.algaworks.algashop.ordering.domain.valueobject.Billing;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.Shipping;
@@ -53,7 +53,7 @@ public class OrderDataBuilder {
   private Supplier<OffsetDateTime> readyAt = OffsetDateTime::now;
 
   @With
-  private Supplier<BillingInfo> billingInfo = () -> BillingInfoDataBuilder.builder().buildNew();
+  private Supplier<Billing> billingInfo = () -> BillingDataBuilder.builder().build();
 
   @With
   private Supplier<Shipping> shipping = () -> ShippingDataBuilder.builder().build();
@@ -72,20 +72,20 @@ public class OrderDataBuilder {
     return new OrderDataBuilder();
   }
 
-  public static OrderDataBuilder builder(final Order order) {
-    final OrderId id = order.id();
-    final CustomerId customerId = order.customerId();
-    final Money totalAmount = order.totalAmount();
-    final Quantity totalItems = order.totalItems();
-    final OffsetDateTime placedAt = order.placedAt();
-    final OffsetDateTime paidAt = order.paidAt();
-    final OffsetDateTime canceledAt = order.cancelledAt();
-    final OffsetDateTime readyAt = order.readyAt();
-    final BillingInfo billing = order.billing();
-    final Shipping shipping = order.shipping();
-    final OrderStatus orderStatus = order.status();
-    final PaymentMethod paymentMethod = order.paymentMethod();
-    final Set<OrderItem> items = new HashSet<>(order.items());
+  public static OrderDataBuilder builder(Order order) {
+    OrderId id = order.id();
+    CustomerId customerId = order.customerId();
+    Money totalAmount = order.totalAmount();
+    Quantity totalItems = order.totalItems();
+    OffsetDateTime placedAt = order.placedAt();
+    OffsetDateTime paidAt = order.paidAt();
+    OffsetDateTime canceledAt = order.cancelledAt();
+    OffsetDateTime readyAt = order.readyAt();
+    Billing billing = order.billing();
+    Shipping shipping = order.shipping();
+    OrderStatus orderStatus = order.status();
+    PaymentMethod paymentMethod = order.paymentMethod();
+    Set<OrderItem> items = new HashSet<>(order.items());
 
     return new OrderDataBuilder(
       () -> id,
@@ -114,7 +114,7 @@ public class OrderDataBuilder {
       .paidAt(paidAt.get())
       .cancelledAt(canceledAt.get())
       .readyAt(readyAt.get())
-      .billingInfo(billingInfo.get())
+      .billing(billingInfo.get())
       .shipping(shipping.get())
       .status(status.get())
       .paymentMethod(paymentMethod.get())
