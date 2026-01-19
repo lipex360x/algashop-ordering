@@ -20,21 +20,15 @@ public class OrderCannotBePlacedException extends DomainException {
     );
   }
 
+  public static OrderCannotBePlacedException invalidShippingDate(OrderId id) {
+    return new OrderCannotBePlacedException(
+      String.format(ErrorMessages.VALIDATION_ORDER_INVALID_EXPECTED_DATE, id)
+    );
+  }
+
   public static OrderCannotBePlacedException noBillingInfo(OrderId id) {
     return new OrderCannotBePlacedException(
       String.format(ErrorMessages.VALIDATION_ORDER_NO_BILLING_INFO, id)
-    );
-  }
-
-  public static OrderCannotBePlacedException invalidShippingCost(OrderId id) {
-    return new OrderCannotBePlacedException(
-      String.format(ErrorMessages.VALIDATION_ORDER_INVALID_SHIPPING_COST, id)
-    );
-  }
-
-  public static OrderCannotBePlacedException invalidExpectedDeliveryDate(OrderId id) {
-    return new OrderCannotBePlacedException(
-      String.format(ErrorMessages.VALIDATION_ORDER_INVALID_EXPECTED_DATE, id)
     );
   }
 

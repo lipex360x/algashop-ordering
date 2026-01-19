@@ -11,6 +11,7 @@ import com.algaworks.algashop.ordering.domain.valueobject.Phone;
 import com.algaworks.algashop.ordering.domain.valueobject.Product;
 import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
+import com.algaworks.algashop.ordering.domain.valueobject.Recipient;
 import com.algaworks.algashop.ordering.domain.valueobject.ZipCode;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
@@ -110,8 +111,8 @@ public class ValueObjectProvider extends AbstractProvider<BaseProviders> {
 
   public Product product() {
     return Product.builder()
-      .id(new ProductId())
-      .name(new ProductName(faker.book().title()))
+      .id(this.productId())
+      .name(this.productName())
       .price(money())
       .inStock(true)
       .build();
@@ -119,7 +120,7 @@ public class ValueObjectProvider extends AbstractProvider<BaseProviders> {
 
   public Product product(ProductName name) {
     return Product.builder()
-      .id(new ProductId())
+      .id(this.productId())
       .name(name)
       .price(money())
       .inStock(true)
@@ -128,8 +129,8 @@ public class ValueObjectProvider extends AbstractProvider<BaseProviders> {
 
   public Product product(Money price) {
     return Product.builder()
-      .id(new ProductId())
-      .name(new ProductName(faker.book().title()))
+      .id(this.productId())
+      .name(this.productName())
       .price(price)
       .inStock(true)
       .build();
@@ -137,10 +138,18 @@ public class ValueObjectProvider extends AbstractProvider<BaseProviders> {
 
   public Product product(Boolean inStock) {
     return Product.builder()
-      .id(new ProductId())
-      .name(new ProductName(faker.book().title()))
+      .id(this.productId())
+      .name(this.productName())
       .price(money())
       .inStock(inStock)
+      .build();
+  }
+
+  public Recipient recipient() {
+    return Recipient.builder()
+      .fullName(this.fullName())
+      .document(this.document())
+      .phone(this.phone())
       .build();
   }
 

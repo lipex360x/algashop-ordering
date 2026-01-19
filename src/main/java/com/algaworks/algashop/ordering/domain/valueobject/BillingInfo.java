@@ -6,8 +6,12 @@ import lombok.Builder;
 import java.util.Objects;
 
 @Builder
-public record BillingInfo(FullName fullName, Document document, Phone phone, Address address) {
-
+public record BillingInfo(
+  FullName fullName,
+  Document document,
+  Phone phone,
+  Address address
+) {
   public BillingInfo {
     Objects.requireNonNull(fullName, ErrorMessages.VALIDATION_ERROR_VALUE_IS_NULL);
     Objects.requireNonNull(document, ErrorMessages.VALIDATION_ERROR_VALUE_IS_NULL);

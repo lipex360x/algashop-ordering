@@ -8,14 +8,13 @@ import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
 import com.algaworks.algashop.ordering.domain.valueobject.BillingInfo;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
-import com.algaworks.algashop.ordering.domain.valueobject.ShippingInfo;
+import com.algaworks.algashop.ordering.domain.valueobject.Shipping;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.With;
 
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,19 +56,13 @@ public class OrderDataBuilder {
   private Supplier<BillingInfo> billingInfo = () -> BillingInfoDataBuilder.builder().buildNew();
 
   @With
-  private Supplier<ShippingInfo> shippingInfo = () -> ShippingInfoDataBuilder.builder().buildNew();
+  private Supplier<Shipping> shipping = () -> ShippingDataBuilder.builder().build();
 
   @With
   private Supplier<OrderStatus> status = () -> customFaker.options().option(OrderStatus.class);
 
   @With
   private Supplier<PaymentMethod> paymentMethod = () -> customFaker.options().option(PaymentMethod.class);
-
-  @With
-  private Supplier<Money> shippingCost = () -> customFaker.valueObject().money();
-
-  @With
-  private Supplier<LocalDate> expectedDeliveryDate = () -> customFaker.timeAndDate().birthday();
 
   @With
   private Supplier<Set<OrderItem>> items = () -> OrderItemDataBuilder.builder()
@@ -80,21 +73,20 @@ public class OrderDataBuilder {
   }
 
   public static OrderDataBuilder builder(final Order order) {
-    final var id = order.id();
-    final var customerId = order.customerId();
-    final var totalAmount = order.totalAmount();
-    final var totalItems = order.totalItems();
-    final var placedAt = order.placedAt();
-    final var paidAt = order.paidAt();
-    final var canceledAt = order.cancelledAt();
-    final var readyAt = order.readyAt();
-    final var billing = order.billing();
-    final var shipping = order.shipping();
-    final var orderStatus = order.status();
-    final var paymentMethod = order.paymentMethod();
-    final var shippingCost = order.shippingCost();
-    final var expectedDeliveryDate = order.expectedDeliveryDate();
-    final var items = new HashSet<>(order.items());
+    final OrderId id = order.id();
+    final CustomerId customerId = order.customerId();
+    final Money totalAmount = order.totalAmount();
+    final Quantity totalItems = order.totalItems();
+    final OffsetDateTime placedAt = order.placedAt();
+    final OffsetDateTime paidAt = order.paidAt();
+    final OffsetDateTime canceledAt = order.cancelledAt();
+    final OffsetDateTime readyAt = order.readyAt();
+    final BillingInfo billing = order.billing();
+    final Shipping shipping = order.shipping();
+    final OrderStatus orderStatus = order.status();
+    final PaymentMethod paymentMethod = order.paymentMethod();
+    final Set<OrderItem> items = new HashSet<>(order.items());
+
     return new OrderDataBuilder(
       () -> id,
       () -> customerId,
@@ -108,8 +100,6 @@ public class OrderDataBuilder {
       () -> shipping,
       () -> orderStatus,
       () -> paymentMethod,
-      () -> shippingCost,
-      () -> expectedDeliveryDate,
       () -> items
     );
   }
@@ -125,11 +115,9 @@ public class OrderDataBuilder {
       .cancelledAt(canceledAt.get())
       .readyAt(readyAt.get())
       .billingInfo(billingInfo.get())
-      .shippingInfo(shippingInfo.get())
+      .shipping(shipping.get())
       .status(status.get())
       .paymentMethod(paymentMethod.get())
-      .shippingCost(shippingCost.get())
-      .expectedDeliveryDate(expectedDeliveryDate.get())
       .items(items.get())
       .build();
   }
