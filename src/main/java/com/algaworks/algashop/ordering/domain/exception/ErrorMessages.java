@@ -66,5 +66,7 @@ public class ErrorMessages {
   public static final String VALIDATION_ORDER_NO_PAYMENT_METHOD
     = "Order %s - Payment method cannot be empty";
 
+  public static final String ERROR_PRODUCT_IS_OUT_OF_STOCK
+        = "Product id %s is out of stock";
 
 }

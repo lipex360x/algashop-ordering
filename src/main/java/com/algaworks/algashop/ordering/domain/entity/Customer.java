@@ -13,7 +13,6 @@ import lombok.Builder;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.UUID;
 
 import static com.algaworks.algashop.ordering.domain.exception.ErrorMessages.*;
 

@@ -126,5 +126,4 @@ public class OrderItem {
     this.totalAmount = totalAmount;
   }
 
-
 }

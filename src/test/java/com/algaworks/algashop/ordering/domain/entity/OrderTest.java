@@ -8,6 +8,7 @@ import com.algaworks.algashop.ordering.domain.exception.ErrorMessages;
 import com.algaworks.algashop.ordering.domain.exception.OrderCannotBePlacedException;
 import com.algaworks.algashop.ordering.domain.exception.OrderInvalidShippingDeliveryDateException;
 import com.algaworks.algashop.ordering.domain.exception.OrderStatusCannotBeChangedException;
+import com.algaworks.algashop.ordering.domain.exception.ProductOutOfStockException;
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
 import com.algaworks.algashop.ordering.domain.valueobject.BillingInfo;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
@@ -16,6 +17,7 @@ import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.ShippingInfo;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -340,7 +342,20 @@ class OrderTest {
       o -> assertThat(o.totalAmount()).isEqualTo(new Money("50")),
       o -> assertThat(o.totalItems()).isEqualTo(new Quantity(5))
     );
+  }
 
+  @Test
+  void shouldThrowExceptionWhenAddItemWithProductOutOfStock() {
+    CustomerId customerId = customFaker.valueObject().customerId();
+    Order order = Order.draft(customerId);
+    Product product = customFaker.valueObject().product(false);
+
+    ThrowableAssert.ThrowingCallable addItemTask =
+      () -> order.addItem(product, new Quantity(2));
+
+    assertThatExceptionOfType(ProductOutOfStockException.class)
+      .isThrownBy(addItemTask)
+      .withMessage(String.format(ErrorMessages.ERROR_PRODUCT_IS_OUT_OF_STOCK, product.id()));
   }
 }
 

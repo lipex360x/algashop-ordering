@@ -109,6 +109,8 @@ public class Order {
     @NonNull Product product,
     @NonNull Quantity quantity
   ) {
+    product.checkOutOfStock();
+
     OrderItem orderItem = OrderItem.brandNew()
       .orderId(this.id())
       .product(product)
