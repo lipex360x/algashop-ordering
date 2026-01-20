@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
+import com.algaworks.algashop.ordering.domain.exception.OrderCannotBeEditedException;
 import com.algaworks.algashop.ordering.domain.exception.OrderCannotBePlacedException;
 import com.algaworks.algashop.ordering.domain.exception.OrderDoesNotContainOrderItemException;
 import com.algaworks.algashop.ordering.domain.exception.OrderInvalidShippingDeliveryDateException;
@@ -100,6 +101,7 @@ public class Order {
     @NonNull Product product,
     @NonNull Quantity quantity
   ) {
+    verifyIfChangeable();
     product.checkOutOfStock();
 
     OrderItem orderItem = OrderItem.buildNew()
@@ -125,14 +127,17 @@ public class Order {
   }
 
   public void changePaymentMethod(@NonNull PaymentMethod paymentMethod) {
+    verifyIfChangeable();
     this.setPaymentMethod(paymentMethod);
   }
 
   public void changeBilling(@NonNull Billing billing) {
+    verifyIfChangeable();
     this.setBilling(billing);
   }
 
   public void changeShipping(@NonNull Shipping shipping) {
+    verifyIfChangeable();
     if (shipping.expectedDate().isBefore(LocalDate.now()))
       throw new OrderInvalidShippingDeliveryDateException(this.id());
     this.setShipping(shipping);
@@ -142,6 +147,7 @@ public class Order {
     @NonNull OrderItemId orderItemId,
     @NonNull Quantity quantity
   ) {
+    verifyIfChangeable();
     OrderItem orderItem = this.findOrderItem(orderItemId);
     orderItem.changeQuantity(quantity);
     recalculateTotals();
@@ -241,6 +247,10 @@ public class Order {
     if (this.billing() == null) throw OrderCannotBePlacedException.noBillingInfo(this.id());
     if (this.items().isEmpty() || this.items() == null)
       throw OrderCannotBePlacedException.noItems(this.id());
+  }
+
+  private void verifyIfChangeable() {
+    if (!isDraft()) throw new OrderCannotBeEditedException(this.id(), this.status());
   }
 
   private OrderItem findOrderItem(@NonNull OrderItemId orderItemId) {

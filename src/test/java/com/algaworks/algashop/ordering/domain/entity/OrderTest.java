@@ -3,8 +3,10 @@ package com.algaworks.algashop.ordering.domain.entity;
 import com.algaworks.algashop.ordering.domain.builder.BillingDataBuilder;
 import com.algaworks.algashop.ordering.domain.builder.OrderDataBuilder;
 import com.algaworks.algashop.ordering.domain.builder.OrderItemDataBuilder;
+import com.algaworks.algashop.ordering.domain.builder.ProductDataBuilder;
 import com.algaworks.algashop.ordering.domain.builder.ShippingDataBuilder;
 import com.algaworks.algashop.ordering.domain.exception.ErrorMessages;
+import com.algaworks.algashop.ordering.domain.exception.OrderCannotBeEditedException;
 import com.algaworks.algashop.ordering.domain.exception.OrderCannotBePlacedException;
 import com.algaworks.algashop.ordering.domain.exception.OrderInvalidShippingDeliveryDateException;
 import com.algaworks.algashop.ordering.domain.exception.OrderStatusCannotBeChangedException;
@@ -333,8 +335,11 @@ class OrderTest {
   @Test
   void shouldChangeItemQuantity() {
     CustomerId customerId = customFaker.valueObject().customerId();
-    Order order = Order.draft(customerId);
-    Product product = customFaker.valueObject().product(new Money("10"));
+    Order order = OrderDataBuilder.builder(Order.draft(customerId)).build();
+
+    Product product = ProductDataBuilder.builder()
+      .withPrice(() -> new Money("10"))
+      .build();
 
     order.addItem(
       product,
@@ -358,9 +363,13 @@ class OrderTest {
 
   @Test
   void shouldThrowExceptionWhenAddItemWithProductOutOfStock() {
-    CustomerId customerId = customFaker.valueObject().customerId();
-    Order order = Order.draft(customerId);
-    Product product = customFaker.valueObject().product(false);
+    Order order = OrderDataBuilder.builder()
+      .withStatus(() -> OrderStatus.DRAFT)
+      .build();
+
+    Product product = ProductDataBuilder.builder()
+      .withInStock(() -> false)
+      .build();
 
     ThrowableAssert.ThrowingCallable addItemTask =
       () -> order.addItem(product, new Quantity(2));
@@ -368,6 +377,86 @@ class OrderTest {
     assertThatExceptionOfType(ProductOutOfStockException.class)
       .isThrownBy(addItemTask)
       .withMessage(String.format(ErrorMessages.ERROR_PRODUCT_IS_OUT_OF_STOCK, product.id()));
+  }
+
+  @Test
+  void shouldThrowExceptionWhenAddItemForANonDraftOrder() {
+    Order order = OrderDataBuilder.builder()
+      .withStatus(() -> OrderStatus.PLACED)
+      .build();
+
+    Product product = ProductDataBuilder.builder().build();
+
+    ThrowableAssert.ThrowingCallable addItemTask =
+      () -> order.addItem(product, new Quantity(2));
+
+    assertThatExceptionOfType(OrderCannotBeEditedException.class)
+      .isThrownBy(addItemTask)
+      .withMessage(String.format(ErrorMessages.ERROR_ORDER_CANNOT_BE_EDITED, order.id(), order.status()));
+  }
+
+  @Test
+  void shouldThrowExceptionWhenChangeBillingForANonDraftOrder() {
+    Order order = OrderDataBuilder.builder()
+      .withStatus(() -> OrderStatus.PLACED)
+      .build();
+
+    Billing billing = BillingDataBuilder.builder().build();
+
+    ThrowableAssert.ThrowingCallable changeBillingTask =
+      () -> order.changeBilling(billing);
+
+    assertThatExceptionOfType(OrderCannotBeEditedException.class)
+      .isThrownBy(changeBillingTask)
+      .withMessage(String.format(ErrorMessages.ERROR_ORDER_CANNOT_BE_EDITED, order.id(), order.status()));
+  }
+
+  @Test
+  void shouldThrowExceptionWhenChangeShippingForANonDraftOrder() {
+    Order order = OrderDataBuilder.builder()
+      .withStatus(() -> OrderStatus.PLACED)
+      .build();
+
+    Shipping shipping = ShippingDataBuilder.builder().build();
+
+    ThrowableAssert.ThrowingCallable changeShippingTask =
+      () -> order.changeShipping(shipping);
+
+    assertThatExceptionOfType(OrderCannotBeEditedException.class)
+      .isThrownBy(changeShippingTask)
+      .withMessage(String.format(ErrorMessages.ERROR_ORDER_CANNOT_BE_EDITED, order.id(), order.status()));
+  }
+
+  @Test
+  void shouldThrowExceptionWhenChangeItemQuantityForANonDraftOrder() {
+    Order order = OrderDataBuilder.builder()
+      .withStatus(() -> OrderStatus.PLACED)
+      .build();
+
+    OrderItem orderItem = OrderItemDataBuilder.builder()
+      .withOrderId(order::id)
+      .buildExisting();
+
+    ThrowableAssert.ThrowingCallable changeItemQuantityTask =
+      () -> order.changeItemQuantity(orderItem.id(), new Quantity(5));
+
+    assertThatExceptionOfType(OrderCannotBeEditedException.class)
+      .isThrownBy(changeItemQuantityTask)
+      .withMessage(String.format(ErrorMessages.ERROR_ORDER_CANNOT_BE_EDITED, order.id(), order.status()));
+  }
+
+  @Test
+  void shouldThrowExceptionWhenChangePaymentMethodForANonDraftOrder() {
+    Order order = OrderDataBuilder.builder()
+      .withStatus(() -> OrderStatus.PLACED)
+      .build();
+
+    ThrowableAssert.ThrowingCallable changePaymentMethodTask =
+      () -> order.changePaymentMethod(PaymentMethod.CREDIT_CARD);
+
+    assertThatExceptionOfType(OrderCannotBeEditedException.class)
+      .isThrownBy(changePaymentMethodTask)
+      .withMessage(String.format(ErrorMessages.ERROR_ORDER_CANNOT_BE_EDITED, order.id(), order.status()));
   }
 }
 

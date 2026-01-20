@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.domain.builder;
 
+import com.algaworks.algashop.ordering.domain.entity.Order;
 import com.algaworks.algashop.ordering.domain.entity.OrderItem;
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
@@ -43,7 +44,7 @@ public class OrderItemDataBuilder {
   public static OrderItemDataBuilder builder() {
     return new OrderItemDataBuilder();
   }
-
+  
   public OrderItem buildNew() {
     return OrderItem.buildNew()
       .orderId(orderId.get())

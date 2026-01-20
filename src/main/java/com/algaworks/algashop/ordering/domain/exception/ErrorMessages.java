@@ -63,4 +63,7 @@ public class ErrorMessages {
   public static final String VALIDATION_ORDER_INVALID_EXPECTED_DATE
     = "Order %s - Invalid shipping date. Date cannot be in the past";
 
+  public static final String ERROR_ORDER_CANNOT_BE_EDITED
+    = "Order %s with status %s cannot be edited";
+
 }
