@@ -65,7 +65,7 @@ public class CustomerDataBuilder {
     return new CustomerDataBuilder();
   }
 
-  public Customer buildNew() {
+  public Customer build() {
     return Customer.buildNew()
       .fullName(fullName.get())
       .birthDate(birthDate.get())

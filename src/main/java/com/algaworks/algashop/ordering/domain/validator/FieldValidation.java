@@ -14,7 +14,7 @@ public class FieldValidation {
   }
 
   public static void requireNonBlank(String value, String errorMessage) {
-    Objects.requireNonNull(value);
+    Objects.requireNonNull(value, VALIDATION_ERROR_VALUE_IS_NULL);
     if (value.isBlank()) throw new IllegalArgumentException(errorMessage);
   }
 
@@ -23,8 +23,7 @@ public class FieldValidation {
   }
 
   public static void requiresDateInPast(LocalDate date, String errorMessage) {
-    Objects.requireNonNull(date, errorMessage);
+    Objects.requireNonNull(date, VALIDATION_ERROR_VALUE_IS_NULL);
     if (date.isAfter(LocalDate.now())) throw new IllegalArgumentException(errorMessage);
   }
-
 }

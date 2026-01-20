@@ -37,17 +37,12 @@ public class ShippingDataBuilder {
     return new ShippingDataBuilder();
   }
 
-  public static ShippingDataBuilder builder(final Shipping shipping) {
-    final Recipient recipient = shipping.recipient();
-    final Address address = shipping.address();
-    final Money cost = shipping.cost();
-    final LocalDate expectedDate = shipping.expectedDate();
-
+  public static ShippingDataBuilder builder(Shipping shipping) {
     return new ShippingDataBuilder(
-      () -> recipient,
-      () -> address,
-      () -> cost,
-      () -> expectedDate
+      shipping::recipient,
+      shipping::address,
+      shipping::cost,
+      shipping::expectedDate
     );
   }
 

@@ -26,7 +26,7 @@ public class OrderItem {
 
   private Money totalAmount;
 
-  @Builder(builderClassName = "ExistingOrderItemBuilder", builderMethodName = "existing")
+  @Builder(builderClassName = "ExistingOrderItemBuilder", builderMethodName = "buildExisting")
   public OrderItem(
     @NonNull OrderItemId id,
     @NonNull OrderId orderId,
@@ -43,7 +43,7 @@ public class OrderItem {
     this.setTotalAmount(totalAmount);
   }
 
-  @Builder(builderClassName = "BrandNewOrderItemBuilder", builderMethodName = "brandNew")
+  @Builder(builderClassName = "BrandNewOrderItemBuilder", builderMethodName = "buildNew")
   private static OrderItem createBrandNew(
     @NonNull OrderId orderId,
     @NonNull Product product,

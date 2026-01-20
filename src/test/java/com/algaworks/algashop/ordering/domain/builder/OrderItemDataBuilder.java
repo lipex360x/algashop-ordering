@@ -4,12 +4,10 @@ import com.algaworks.algashop.ordering.domain.entity.OrderItem;
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.Product;
-import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.OrderItemId;
 
-import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
 import static lombok.AccessLevel.PRIVATE;
 
 import lombok.AllArgsConstructor;
@@ -37,15 +35,6 @@ public class OrderItemDataBuilder {
   private Supplier<Product> product = () -> customFaker.valueObject().product();
 
   @With
-  private Supplier<ProductId> productId = () -> customFaker.valueObject().productId();
-
-  @With
-  private Supplier<ProductName> productName = () -> customFaker.valueObject().productName();
-
-  @With
-  private Supplier<Money> price = () -> customFaker.valueObject().money(5, 200);
-
-  @With
   private Supplier<Quantity> quantity = () -> customFaker.valueObject().quantity(1, 10);
 
   @With
@@ -56,7 +45,7 @@ public class OrderItemDataBuilder {
   }
 
   public OrderItem buildNew() {
-    return OrderItem.brandNew()
+    return OrderItem.buildNew()
       .orderId(orderId.get())
       .product(product.get())
       .quantity(quantity.get())
@@ -64,7 +53,7 @@ public class OrderItemDataBuilder {
   }
 
   public OrderItem buildExisting() {
-    return OrderItem.existing()
+    return OrderItem.buildExisting()
       .id(id.get())
       .orderId(orderId.get())
       .product(product.get())

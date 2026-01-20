@@ -60,7 +60,7 @@ public class Customer {
     this.setAddress(address);
   }
 
-  @Builder(builderClassName = "BrandNewCustomerBuilder", builderMethodName = "buildNew")
+  @Builder(builderClassName = "NewCustomerBuilder", builderMethodName = "buildNew")
   private static Customer createBrandNew(
     FullName fullName,
     BirthDate birthDate,

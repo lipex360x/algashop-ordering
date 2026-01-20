@@ -73,39 +73,27 @@ public class OrderDataBuilder {
   }
 
   public static OrderDataBuilder builder(Order order) {
-    OrderId id = order.id();
-    CustomerId customerId = order.customerId();
-    Money totalAmount = order.totalAmount();
-    Quantity totalItems = order.totalItems();
-    OffsetDateTime placedAt = order.placedAt();
-    OffsetDateTime paidAt = order.paidAt();
-    OffsetDateTime canceledAt = order.cancelledAt();
-    OffsetDateTime readyAt = order.readyAt();
-    Billing billing = order.billing();
-    Shipping shipping = order.shipping();
-    OrderStatus orderStatus = order.status();
-    PaymentMethod paymentMethod = order.paymentMethod();
     Set<OrderItem> items = new HashSet<>(order.items());
 
     return new OrderDataBuilder(
-      () -> id,
-      () -> customerId,
-      () -> totalAmount,
-      () -> totalItems,
-      () -> placedAt,
-      () -> paidAt,
-      () -> canceledAt,
-      () -> readyAt,
-      () -> billing,
-      () -> shipping,
-      () -> orderStatus,
-      () -> paymentMethod,
+      order::id,
+      order::customerId,
+      order::totalAmount,
+      order::totalItems,
+      order::placedAt,
+      order::paidAt,
+      order::cancelledAt,
+      order::readyAt,
+      order::billing,
+      order::shipping,
+      order::status,
+      order::paymentMethod,
       () -> items
     );
   }
 
   public Order build(){
-    return Order.existing()
+    return Order.buildExisting()
       .id(id.get())
       .customerId(customerId.get())
       .totalAmount(totalAmount.get())

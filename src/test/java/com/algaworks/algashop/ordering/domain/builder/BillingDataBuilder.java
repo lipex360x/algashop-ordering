@@ -33,14 +33,10 @@ public class BillingDataBuilder {
   }
 
   public static BillingDataBuilder builder(Billing billing) {
-    Recipient recipient = billing.recipient();
-    Address address = billing.address();
-    Email email = billing.email();
-
     return new BillingDataBuilder(
-      () -> recipient,
-      () -> address,
-      () -> email
+      billing::recipient,
+      billing::address,
+      billing::email
     );
   }
 

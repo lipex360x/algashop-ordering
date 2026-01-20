@@ -47,7 +47,7 @@ public class Order {
 
   private Set<OrderItem> items;
 
-  @Builder(builderClassName = "ExistingOrderBuilder", builderMethodName = "existing")
+  @Builder(builderClassName = "ExistingOrderBuilder", builderMethodName = "buildExisting")
   public Order(
     OrderId id,
     CustomerId customerId,
@@ -102,7 +102,7 @@ public class Order {
   ) {
     product.checkOutOfStock();
 
-    OrderItem orderItem = OrderItem.brandNew()
+    OrderItem orderItem = OrderItem.buildNew()
       .orderId(this.id())
       .product(product)
       .quantity(quantity)
@@ -128,7 +128,7 @@ public class Order {
     this.setPaymentMethod(paymentMethod);
   }
 
-  public void changeBillingInfo(@NonNull Billing billing) {
+  public void changeBilling(@NonNull Billing billing) {
     this.setBilling(billing);
   }
 

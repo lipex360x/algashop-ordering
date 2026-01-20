@@ -34,11 +34,11 @@ class OrderTest {
   private static final CustomFaker customFaker = new CustomFaker();
 
   @Test
-  void shouldCreateDraft() {
+  void shouldGenerateDraftOrder() {
     CustomerId customerId = customFaker.valueObject().customerId();
-    Order order = OrderDataBuilder.builder(Order.draft(customerId)).build();
+    Order order = Order.draft(customerId);
 
-    String[] nullProperties = new String[]{
+    String[] orderInDraftNullProperties = new String[]{
       "id",
       "customerId",
       "totalAmount",
@@ -48,13 +48,13 @@ class OrderTest {
     };
 
     assertWith(order,
+      o -> assertThat(o).hasAllNullFieldsOrPropertiesExcept(orderInDraftNullProperties),
       o -> assertThat(o.isDraft()).isTrue(),
       o -> assertThat(o.customerId()).isEqualTo(customerId),
       o -> assertThat(o.totalAmount()).isEqualTo(Money.ZERO),
       o -> assertThat(o.totalItems()).isEqualTo(Quantity.ZERO),
       o -> assertThat(o.shipping()).isNull(),
-      o -> assertThat(o.items()).isEmpty(),
-      o -> assertThat(o).hasAllNullFieldsOrPropertiesExcept(nullProperties)
+      o -> assertThat(o.items()).isEmpty()
     );
   }
 
@@ -251,7 +251,7 @@ class OrderTest {
   }
 
   @Test
-  void shouldChangeBillingInfo() {
+  void shouldChangeBilling() {
     CustomerId customerId = customFaker.valueObject().customerId();
     Order orderDraft = Order.draft(customerId);
 
@@ -262,7 +262,7 @@ class OrderTest {
     assertThat(order.billing()).isNull();
 
     Billing billing = BillingDataBuilder.builder().build();
-    order.changeBillingInfo(billing);
+    order.changeBilling(billing);
 
     assertThat(order.billing()).isEqualTo(billing);
   }

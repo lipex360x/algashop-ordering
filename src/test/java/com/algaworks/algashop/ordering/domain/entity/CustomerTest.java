@@ -34,7 +34,7 @@ class CustomerTest {
 
   @Test
   void shouldThrowException_whenUpdatingArchivedCustomer() {
-    Customer customer = CustomerDataBuilder.builder().buildNew();
+    Customer customer = CustomerDataBuilder.builder().build();
     customer.archive();
     assertThatExceptionOfType(CustomerArchivedException.class)
       .isThrownBy(customer::archive);
@@ -52,7 +52,7 @@ class CustomerTest {
 
   @Test
   void shouldSumPoints_whenAddingLoyaltyPoints() {
-    Customer customer = CustomerDataBuilder.builder().buildNew();
+    Customer customer = CustomerDataBuilder.builder().build();
     customer.addLoyaltyPoints(new LoyaltyPoints(10));
     assertThat(customer.loyaltyPoints()).isEqualTo(new LoyaltyPoints(10));
     customer.addLoyaltyPoints(new LoyaltyPoints(10));

@@ -1,8 +1,12 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
+import com.algaworks.algashop.ordering.domain.builder.ProductDataBuilder;
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.Product;
+import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
+import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
+import com.algaworks.algashop.ordering.domain.valueobject.id.OrderItemId;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertWith;
@@ -13,13 +17,16 @@ class OrderItemTest {
   private static final CustomFaker customFaker = new CustomFaker();
 
   @Test
-  void shouldCreateBrandNew(){
-    final var orderId = customFaker.valueObject().orderId();
-    final var quantity = customFaker.valueObject().quantity();
+  void shouldBuildNew(){
+    OrderId orderId = customFaker.valueObject().orderId();
+    Quantity quantity = customFaker.valueObject().quantity();
+    Money price = new Money("20");
 
-    Product product = customFaker.valueObject().product(new Money("10"));
+    Product product = ProductDataBuilder.builder()
+      .withPrice(() -> price)
+      .build();
 
-    final var orderItem = OrderItem.brandNew()
+    OrderItem orderItem = OrderItem.buildNew()
       .orderId(orderId)
       .product(product)
       .quantity(quantity)
@@ -30,22 +37,25 @@ class OrderItemTest {
       o -> assertThat(o.orderId()).isEqualTo(orderId),
       o -> assertThat(o.productId()).isEqualTo(product.id()),
       o -> assertThat(o.productName()).isEqualTo(product.name()),
-      o -> assertThat(o.price()).isEqualTo(product.price()),
+      o -> assertThat(o.price()).isEqualTo(price),
       o -> assertThat(o.quantity()).isEqualTo(quantity),
       o -> assertThat(o.totalAmount()).isNotNull()
     );
   }
 
   @Test
-  void shouldCreateExisting(){
-    final var id = customFaker.valueObject().orderItemId();
-    final var orderId = customFaker.valueObject().orderId();
-    final var quantity = customFaker.valueObject().quantity();
-    final var totalAmount = customFaker.valueObject().money();
+  void shouldBuildExisting(){
+    OrderItemId id = customFaker.valueObject().orderItemId();
+    OrderId orderId = customFaker.valueObject().orderId();
+    Quantity quantity = customFaker.valueObject().quantity();
+    Money price = new Money("50");
+    Money totalAmount = new Money("50");
 
-    Product product = customFaker.valueObject().product(new Money("10"));
+    Product product = ProductDataBuilder.builder()
+      .withPrice(() -> price)
+      .build();
 
-    final var orderItem = OrderItem.existing()
+    OrderItem orderItem = OrderItem.buildExisting()
       .id(id)
       .orderId(orderId)
       .product(product)
