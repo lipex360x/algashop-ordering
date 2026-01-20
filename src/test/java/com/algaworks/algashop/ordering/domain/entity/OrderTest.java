@@ -267,6 +267,7 @@ class OrderTest {
   void shouldChangeAnOrderToPaid() {
     Order order = OrderDataBuilder.builder()
       .withStatus(() -> OrderStatus.DRAFT)
+      .withPaidAt(() -> null)
       .build();
 
     order.place();
@@ -282,6 +283,7 @@ class OrderTest {
   void shouldChangeAnOrderToReady() {
     Order order = OrderDataBuilder.builder()
       .withStatus(() -> OrderStatus.DRAFT)
+      .withPaidAt(() -> null)
       .build();
 
     order.place();
@@ -295,6 +297,22 @@ class OrderTest {
       o -> assertThat(o.readyAt()).isNotNull()
     );
   }
+
+  @Test
+  void shouldChangeAnOrderToCancelled() {
+    Order order = OrderDataBuilder.builder()
+      .withStatus(() -> OrderStatus.DRAFT)
+      .build();
+
+    order.cancel();
+
+    assertWith(order,
+      o -> assertThat(o.cancelledAt()).isNotNull(),
+      o -> assertThat(o.isCanceled()).isTrue()
+    );
+  }
+
+
 
   @Test
   void shouldChangeItemQuantity() {
