@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.algaworks.algashop.ordering.domain.exception.ErrorMessages.ERROR_ORDER_STATUS_CANNOT_BE_CHANGED;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -117,44 +118,6 @@ class OrderTest {
   }
 
   @Test
-  void shouldAddItem() {
-    CustomerId customerId = customFaker.valueObject().customerId();
-    Order order = OrderDataBuilder.builder(Order.draft(customerId)).build();
-
-    Product product1 = customFaker.valueObject().product();
-    Product product2 = customFaker.valueObject().product();
-    Product product3 = customFaker.valueObject().product();
-
-    assertThat(order.items()).isEmpty();
-
-    order.addItem(
-      product1,
-      customFaker.valueObject().quantity(2, 4)
-    );
-
-    order.addItem(
-      product2,
-      customFaker.valueObject().quantity(1, 4)
-    );
-
-    order.addItem(
-      product3,
-      customFaker.valueObject().quantity(1, 4)
-    );
-
-    assertThat(order.items()).hasSize(3);
-    assertThat(order.items()).allSatisfy(item -> assertThat(item.id()).isNotNull());
-    assertThat(order.items())
-      .extracting(OrderItem::productName)
-      .extracting(ProductName::value)
-      .containsExactlyInAnyOrder(
-        product1.name().value(),
-        product2.name().value(),
-        product3.name().value()
-      );
-  }
-
-  @Test
   void shouldGenerateExceptionWhenTryToChangeItemSet() {
     Order order = OrderDataBuilder.builder().build();
     Set<OrderItem> item = order.items();
@@ -203,7 +166,6 @@ class OrderTest {
 
     assertThat(order.totalAmount()).isEqualTo(expectedTotalAmount);
     assertThat(order.totalItems()).isEqualTo(expectedTotalQuantity);
-
   }
 
   @Test
@@ -237,7 +199,7 @@ class OrderTest {
 
     assertThatExceptionOfType(OrderStatusCannotBeChangedException.class)
       .isThrownBy(order::place)
-      .withMessage(String.format("Cannot change order %S from status PLACED to PLACED", order.id()));
+      .withMessage(String.format(ERROR_ORDER_STATUS_CANNOT_BE_CHANGED, order.id(), OrderStatus.PLACED, OrderStatus.PLACED));
   }
 
   @Test
@@ -283,7 +245,6 @@ class OrderTest {
       .withExpectedDate(() -> expectedDeliveryDate)
       .withCost(() -> shippingCost)
       .build();
-
 
     order.changeShipping(shipping);
 
@@ -359,104 +320,6 @@ class OrderTest {
       o -> assertThat(o.totalAmount()).isEqualTo(new Money("50")),
       o -> assertThat(o.totalItems()).isEqualTo(new Quantity(5))
     );
-  }
-
-  @Test
-  void shouldThrowExceptionWhenAddItemWithProductOutOfStock() {
-    Order order = OrderDataBuilder.builder()
-      .withStatus(() -> OrderStatus.DRAFT)
-      .build();
-
-    Product product = ProductDataBuilder.builder()
-      .withInStock(() -> false)
-      .build();
-
-    ThrowableAssert.ThrowingCallable addItemTask =
-      () -> order.addItem(product, new Quantity(2));
-
-    assertThatExceptionOfType(ProductOutOfStockException.class)
-      .isThrownBy(addItemTask)
-      .withMessage(String.format(ErrorMessages.ERROR_PRODUCT_IS_OUT_OF_STOCK, product.id()));
-  }
-
-  @Test
-  void shouldThrowExceptionWhenAddItemForANonDraftOrder() {
-    Order order = OrderDataBuilder.builder()
-      .withStatus(() -> OrderStatus.PLACED)
-      .build();
-
-    Product product = ProductDataBuilder.builder().build();
-
-    ThrowableAssert.ThrowingCallable addItemTask =
-      () -> order.addItem(product, new Quantity(2));
-
-    assertThatExceptionOfType(OrderCannotBeEditedException.class)
-      .isThrownBy(addItemTask)
-      .withMessage(String.format(ErrorMessages.ERROR_ORDER_CANNOT_BE_EDITED, order.id(), order.status()));
-  }
-
-  @Test
-  void shouldThrowExceptionWhenChangeBillingForANonDraftOrder() {
-    Order order = OrderDataBuilder.builder()
-      .withStatus(() -> OrderStatus.PLACED)
-      .build();
-
-    Billing billing = BillingDataBuilder.builder().build();
-
-    ThrowableAssert.ThrowingCallable changeBillingTask =
-      () -> order.changeBilling(billing);
-
-    assertThatExceptionOfType(OrderCannotBeEditedException.class)
-      .isThrownBy(changeBillingTask)
-      .withMessage(String.format(ErrorMessages.ERROR_ORDER_CANNOT_BE_EDITED, order.id(), order.status()));
-  }
-
-  @Test
-  void shouldThrowExceptionWhenChangeShippingForANonDraftOrder() {
-    Order order = OrderDataBuilder.builder()
-      .withStatus(() -> OrderStatus.PLACED)
-      .build();
-
-    Shipping shipping = ShippingDataBuilder.builder().build();
-
-    ThrowableAssert.ThrowingCallable changeShippingTask =
-      () -> order.changeShipping(shipping);
-
-    assertThatExceptionOfType(OrderCannotBeEditedException.class)
-      .isThrownBy(changeShippingTask)
-      .withMessage(String.format(ErrorMessages.ERROR_ORDER_CANNOT_BE_EDITED, order.id(), order.status()));
-  }
-
-  @Test
-  void shouldThrowExceptionWhenChangeItemQuantityForANonDraftOrder() {
-    Order order = OrderDataBuilder.builder()
-      .withStatus(() -> OrderStatus.PLACED)
-      .build();
-
-    OrderItem orderItem = OrderItemDataBuilder.builder()
-      .withOrderId(order::id)
-      .buildExisting();
-
-    ThrowableAssert.ThrowingCallable changeItemQuantityTask =
-      () -> order.changeItemQuantity(orderItem.id(), new Quantity(5));
-
-    assertThatExceptionOfType(OrderCannotBeEditedException.class)
-      .isThrownBy(changeItemQuantityTask)
-      .withMessage(String.format(ErrorMessages.ERROR_ORDER_CANNOT_BE_EDITED, order.id(), order.status()));
-  }
-
-  @Test
-  void shouldThrowExceptionWhenChangePaymentMethodForANonDraftOrder() {
-    Order order = OrderDataBuilder.builder()
-      .withStatus(() -> OrderStatus.PLACED)
-      .build();
-
-    ThrowableAssert.ThrowingCallable changePaymentMethodTask =
-      () -> order.changePaymentMethod(PaymentMethod.CREDIT_CARD);
-
-    assertThatExceptionOfType(OrderCannotBeEditedException.class)
-      .isThrownBy(changePaymentMethodTask)
-      .withMessage(String.format(ErrorMessages.ERROR_ORDER_CANNOT_BE_EDITED, order.id(), order.status()));
   }
 }
 

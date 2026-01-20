@@ -101,7 +101,7 @@ public class Order {
     @NonNull Product product,
     @NonNull Quantity quantity
   ) {
-    verifyIfChangeable();
+    this.verifyIfChangeable();
     product.checkOutOfStock();
 
     OrderItem orderItem = OrderItem.buildNew()
@@ -112,6 +112,23 @@ public class Order {
 
     if (this.items == null) this.items = new HashSet<>();
     this.items.add(orderItem);
+    this.recalculateTotals();
+  }
+
+  public void changeItemQuantity(
+    @NonNull OrderItemId orderItemId,
+    @NonNull Quantity quantity
+  ) {
+    this.verifyIfChangeable();
+    OrderItem orderItem = this.findOrderItemOrFail(orderItemId);
+    orderItem.changeQuantity(quantity);
+    this.recalculateTotals();
+  }
+
+  public void removeItem(@NonNull OrderItemId orderItemId) {
+    this.verifyIfChangeable();
+    OrderItem orderItem = this.findOrderItemOrFail(orderItemId);
+    this.items.remove(orderItem);
     this.recalculateTotals();
   }
 
@@ -127,30 +144,20 @@ public class Order {
   }
 
   public void changePaymentMethod(@NonNull PaymentMethod paymentMethod) {
-    verifyIfChangeable();
+    this.verifyIfChangeable();
     this.setPaymentMethod(paymentMethod);
   }
 
   public void changeBilling(@NonNull Billing billing) {
-    verifyIfChangeable();
+    this.verifyIfChangeable();
     this.setBilling(billing);
   }
 
   public void changeShipping(@NonNull Shipping shipping) {
-    verifyIfChangeable();
+    this.verifyIfChangeable();
     if (shipping.expectedDate().isBefore(LocalDate.now()))
       throw new OrderInvalidShippingDeliveryDateException(this.id());
     this.setShipping(shipping);
-  }
-
-  public void changeItemQuantity(
-    @NonNull OrderItemId orderItemId,
-    @NonNull Quantity quantity
-  ) {
-    verifyIfChangeable();
-    OrderItem orderItem = this.findOrderItem(orderItemId);
-    orderItem.changeQuantity(quantity);
-    recalculateTotals();
   }
 
   public boolean isDraft() {
@@ -253,7 +260,7 @@ public class Order {
     if (!isDraft()) throw new OrderCannotBeEditedException(this.id(), this.status());
   }
 
-  private OrderItem findOrderItem(@NonNull OrderItemId orderItemId) {
+  private OrderItem findOrderItemOrFail(@NonNull OrderItemId orderItemId) {
     return this.items().stream()
       .filter(i -> i.id() == orderItemId)
       .findFirst()
