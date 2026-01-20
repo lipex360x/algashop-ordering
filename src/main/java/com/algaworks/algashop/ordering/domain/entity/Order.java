@@ -134,13 +134,18 @@ public class Order {
 
   public void place() {
     this.verifyIfCanChangeToPlaced();
-    this.setPlacedAt(OffsetDateTime.now());
     this.changeStatus(OrderStatus.PLACED);
+    this.setPlacedAt(OffsetDateTime.now());
   }
 
   public void markAsPaid() {
-    this.setPaidAt(OffsetDateTime.now());
     this.changeStatus(OrderStatus.PAID);
+    this.setPaidAt(OffsetDateTime.now());
+  }
+
+  public void markAsReady() {
+    this.changeStatus(OrderStatus.READY);
+    this.setReadyAt(OffsetDateTime.now());
   }
 
   public void changePaymentMethod(@NonNull PaymentMethod paymentMethod) {
@@ -165,11 +170,15 @@ public class Order {
   }
 
   public boolean isPlaced() {
-    return OrderStatus.PLACED.equals(this.status());
+    return OrderStatus.PLACED.equals(this.status()) || this.placedAt() != null;
   }
 
   public boolean isPaid() {
-    return OrderStatus.PAID.equals(this.status());
+    return OrderStatus.PAID.equals(this.status()) || this.paidAt() != null;
+  }
+
+  public boolean isReady() {
+    return OrderStatus.READY.equals(this.status()) || this.readyAt() != null;
   }
 
   public OrderId id() {

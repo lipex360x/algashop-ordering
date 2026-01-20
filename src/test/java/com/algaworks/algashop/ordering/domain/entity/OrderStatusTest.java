@@ -11,6 +11,11 @@ class OrderStatusTest {
     assertThat(OrderStatus.DRAFT.canChangeTo(OrderStatus.PLACED)).isTrue();
     assertThat(OrderStatus.DRAFT.canChangeTo(OrderStatus.CANCELLED)).isTrue();
     assertThat(OrderStatus.PLACED.canChangeTo(OrderStatus.DRAFT)).isFalse();
+
+    assertThat(OrderStatus.PAID.canChangeTo(OrderStatus.READY)).isTrue();
+    assertThat(OrderStatus.DRAFT.canChangeTo(OrderStatus.READY)).isFalse();
+    assertThat(OrderStatus.PLACED.canChangeTo(OrderStatus.READY)).isFalse();
+    assertThat(OrderStatus.CANCELLED.canChangeTo(OrderStatus.DRAFT)).isFalse();
   }
 
   @Test

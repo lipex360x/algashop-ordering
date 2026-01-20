@@ -6,20 +6,16 @@ import com.algaworks.algashop.ordering.domain.builder.OrderItemDataBuilder;
 import com.algaworks.algashop.ordering.domain.builder.ProductDataBuilder;
 import com.algaworks.algashop.ordering.domain.builder.ShippingDataBuilder;
 import com.algaworks.algashop.ordering.domain.exception.ErrorMessages;
-import com.algaworks.algashop.ordering.domain.exception.OrderCannotBeEditedException;
 import com.algaworks.algashop.ordering.domain.exception.OrderCannotBePlacedException;
 import com.algaworks.algashop.ordering.domain.exception.OrderInvalidShippingDeliveryDateException;
 import com.algaworks.algashop.ordering.domain.exception.OrderStatusCannotBeChangedException;
-import com.algaworks.algashop.ordering.domain.exception.ProductOutOfStockException;
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
 import com.algaworks.algashop.ordering.domain.valueobject.Billing;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.Product;
-import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.Shipping;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
-import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -187,14 +183,8 @@ class OrderTest {
 
   @Test
   void shouldThrowExceptionWhenChangeStatusOrderFromPlacedToPlaced() {
-    CustomerId customerId = customFaker.valueObject().customerId();
-    Order order = OrderDataBuilder.builder(Order.draft(customerId))
+    Order order = OrderDataBuilder.builder()
       .withStatus(() -> OrderStatus.PLACED)
-      .withBillingInfo(() -> BillingDataBuilder.builder().build())
-      .withShipping(() -> ShippingDataBuilder.builder().build())
-      .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
-      .withItems(() -> OrderItemDataBuilder.builder()
-        .buildExistingList(customFaker.number().numberBetween(1, 5)))
       .build();
 
     assertThatExceptionOfType(OrderStatusCannotBeChangedException.class)
@@ -275,22 +265,35 @@ class OrderTest {
 
   @Test
   void shouldChangeAnOrderToPaid() {
-    CustomerId customerId = customFaker.valueObject().customerId();
-    Order order = OrderDataBuilder.builder(Order.draft(customerId))
-      .withStatus(() -> OrderStatus.PLACED)
-      .withBillingInfo(() -> BillingDataBuilder.builder().build())
-      .withShipping(() -> ShippingDataBuilder.builder().build())
-      .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
-      .withItems(() -> OrderItemDataBuilder.builder()
-        .buildExistingList(customFaker.number().numberBetween(1, 5)))
+    Order order = OrderDataBuilder.builder()
+      .withStatus(() -> OrderStatus.DRAFT)
       .build();
 
+    order.place();
     assertThat(order.isPlaced()).isTrue();
     assertThat(order.isPaid()).isFalse();
 
     order.markAsPaid();
     assertThat(order.isPaid()).isTrue();
     assertThat(order.paidAt()).isNotNull();
+  }
+
+  @Test
+  void shouldChangeAnOrderToReady() {
+    Order order = OrderDataBuilder.builder()
+      .withStatus(() -> OrderStatus.DRAFT)
+      .build();
+
+    order.place();
+    order.markAsPaid();
+    order.markAsReady();
+
+    assertWith(order,
+      o -> assertThat(o.placedAt()).isNotNull(),
+      o -> assertThat(o.isPaid()).isTrue(),
+      o -> assertThat(o.isReady()).isTrue(),
+      o -> assertThat(o.readyAt()).isNotNull()
+    );
   }
 
   @Test
