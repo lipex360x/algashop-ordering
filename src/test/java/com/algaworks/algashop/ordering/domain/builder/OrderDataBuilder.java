@@ -35,10 +35,10 @@ public class OrderDataBuilder {
   private Supplier<CustomerId> customerId = () -> customFaker.valueObject().customerId();
 
   @With
-  private Supplier<Money> totalAmount = () -> customFaker.valueObject().money();
+  private Supplier<Money> totalAmount = () -> customFaker.valueObject().money(1, 100);
 
   @With
-  private Supplier<Quantity> totalItems = () -> customFaker.valueObject().quantity();
+  private Supplier<Quantity> totalItems = () -> customFaker.valueObject().quantity(1, 9);
 
   @With
   private Supplier<OffsetDateTime> placedAt = OffsetDateTime::now;
@@ -66,7 +66,7 @@ public class OrderDataBuilder {
 
   @With
   private Supplier<Set<OrderItem>> items = () -> OrderItemDataBuilder.builder()
-    .buildExistingList(customFaker.number().numberBetween(1, 9));
+    .buildList(customFaker.number().numberBetween(1, 9));
 
   public static OrderDataBuilder builder() {
     return new OrderDataBuilder();

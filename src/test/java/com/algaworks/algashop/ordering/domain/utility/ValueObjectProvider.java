@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.domain.utility;
 
+import com.algaworks.algashop.ordering.domain.entity.ShoppingCartItem;
 import com.algaworks.algashop.ordering.domain.valueobject.Address;
 import com.algaworks.algashop.ordering.domain.valueobject.BirthDate;
 import com.algaworks.algashop.ordering.domain.valueobject.Document;
@@ -17,6 +18,8 @@ import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.OrderItemId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
+import com.algaworks.algashop.ordering.domain.valueobject.id.ShoppingCartId;
+import com.algaworks.algashop.ordering.domain.valueobject.id.ShoppingCartItemId;
 import net.datafaker.providers.base.AbstractProvider;
 import net.datafaker.providers.base.BaseProviders;
 
@@ -40,6 +43,14 @@ public class ValueObjectProvider extends AbstractProvider<BaseProviders> {
 
   public OrderItemId orderItemId() {
     return new OrderItemId();
+  }
+
+  public ShoppingCartId shoppingCartId() {
+    return new ShoppingCartId();
+  }
+
+  public ShoppingCartItemId shoppingCartItemId() {
+    return new ShoppingCartItemId();
   }
 
   public Phone phone() {
@@ -67,10 +78,10 @@ public class ValueObjectProvider extends AbstractProvider<BaseProviders> {
   }
 
   public LoyaltyPoints loyaltyPoints() {
-    return loyaltyPoints(1,100);
+    return loyaltyPoints(1, 100);
   }
 
-  public LoyaltyPoints loyaltyPoints(final int min, final int max) {
+  public LoyaltyPoints loyaltyPoints(int min, int max) {
     return new LoyaltyPoints(faker.number().numberBetween(min, max));
   }
 

@@ -30,6 +30,7 @@ public class Order {
 
   @EqualsAndHashCode.Include
   private OrderId id;
+
   private CustomerId customerId;
 
   private Money totalAmount;
@@ -110,7 +111,7 @@ public class Order {
       .quantity(quantity)
       .build();
 
-    if (this.items == null) this.items = new HashSet<>();
+    if (Objects.isNull(this.items)) this.items = new HashSet<>();
     this.items.add(orderItem);
     this.recalculateTotals();
   }
@@ -249,7 +250,7 @@ public class Order {
     Integer totalItemsQuantity = this.items().stream().map(i -> i.quantity().value())
       .reduce(0, Integer::sum);
 
-    BigDecimal moneyShippingCost = this.shipping() == null ? BigDecimal.ZERO : this.shipping.cost().value();
+    BigDecimal moneyShippingCost = Objects.isNull(this.shipping()) ? BigDecimal.ZERO : this.shipping.cost().value();
 
     BigDecimal moneyTotalAmount = totalItemsAmount.add(moneyShippingCost);
 
@@ -265,12 +266,15 @@ public class Order {
   }
 
   private void verifyIfCanChangeToPlaced() {
-    if (this.shipping() == null) throw OrderCannotBePlacedException.noShippingInfo(this.id());
+    if (Objects.isNull(this.shipping()))
+      throw OrderCannotBePlacedException.noShippingInfo(this.id());
     if (this.shipping().expectedDate().isBefore(LocalDate.now()))
       throw OrderCannotBePlacedException.invalidShippingDate(this.id());
-    if (this.paymentMethod() == null) throw OrderCannotBePlacedException.noPaymentMethod(this.id());
-    if (this.billing() == null) throw OrderCannotBePlacedException.noBillingInfo(this.id());
-    if (this.items().isEmpty() || this.items() == null)
+    if (Objects.isNull(this.paymentMethod()))
+      throw OrderCannotBePlacedException.noPaymentMethod(this.id());
+    if (Objects.isNull(this.billing()))
+      throw OrderCannotBePlacedException.noBillingInfo(this.id());
+    if (this.items().isEmpty() || Objects.isNull(this.items()))
       throw OrderCannotBePlacedException.noItems(this.id());
   }
 
@@ -280,7 +284,7 @@ public class Order {
 
   private OrderItem findOrderItemOrFail(@NonNull OrderItemId orderItemId) {
     return this.items().stream()
-      .filter(i -> i.id() == orderItemId)
+      .filter(i -> i.id().equals(orderItemId))
       .findFirst()
       .orElseThrow(() -> new OrderDoesNotContainOrderItemException(this.id(), orderItemId));
   }

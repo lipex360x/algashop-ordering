@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-public class OrderAddItemTest {
+class OrderAddItemTest {
 
   private static final CustomFaker customFaker = new CustomFaker();
 

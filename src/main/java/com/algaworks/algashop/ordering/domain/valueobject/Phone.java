@@ -1,6 +1,7 @@
 package com.algaworks.algashop.ordering.domain.valueobject;
 
 import com.algaworks.algashop.ordering.domain.exception.ErrorMessages;
+import org.springframework.lang.NonNull;
 
 import java.util.Objects;
 
@@ -17,6 +18,7 @@ public record Phone(String value) {
   }
 
   @Override
+  @NonNull
   public String toString() {
     return value;
   }

@@ -65,7 +65,7 @@ class OrderTest {
       .withBillingInfo(() -> BillingDataBuilder.builder().build())
       .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
       .withItems(() -> OrderItemDataBuilder.builder()
-        .buildExistingList(customFaker.number().numberBetween(1, 5)))
+        .buildList(customFaker.number().numberBetween(1, 5)))
       .build();
 
     assertThatExceptionOfType(OrderCannotBePlacedException.class)
@@ -81,7 +81,7 @@ class OrderTest {
       .withShipping(() -> ShippingDataBuilder.builder().build())
       .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
       .withItems(() -> OrderItemDataBuilder.builder()
-        .buildExistingList(customFaker.number().numberBetween(1, 5)))
+        .buildList(customFaker.number().numberBetween(1, 5)))
       .build();
 
     assertThatExceptionOfType(OrderCannotBePlacedException.class)
@@ -105,7 +105,7 @@ class OrderTest {
       .withBillingInfo(() -> BillingDataBuilder.builder().build())
       .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
       .withItems(() -> OrderItemDataBuilder.builder()
-        .buildExistingList(customFaker.number().numberBetween(1, 5)))
+        .buildList(customFaker.number().numberBetween(1, 5)))
       .build();
 
     assertThatExceptionOfType(OrderCannotBePlacedException.class)
@@ -137,7 +137,7 @@ class OrderTest {
     OrderItem orderItem1 = OrderItemDataBuilder.builder()
       .withQuantity(() -> new Quantity(2))
       .withTotalAmount(() -> new Money("20"))
-      .buildExisting();
+      .build();
 
     order.addItem(
       product1,
@@ -147,7 +147,7 @@ class OrderTest {
     OrderItem orderItem2 = OrderItemDataBuilder.builder()
       .withQuantity(() -> new Quantity(1))
       .withTotalAmount(() -> new Money("20"))
-      .buildExisting();
+      .build();
 
     order.addItem(
       product2,
@@ -172,7 +172,7 @@ class OrderTest {
       .withShipping(() -> ShippingDataBuilder.builder().build())
       .withPaymentMethod(() -> customFaker.options().option(PaymentMethod.class))
       .withItems(() -> OrderItemDataBuilder.builder()
-        .buildExistingList(customFaker.number().numberBetween(1, 5)))
+        .buildList(customFaker.number().numberBetween(1, 5)))
       .build();
 
     order.place();
@@ -311,8 +311,6 @@ class OrderTest {
       o -> assertThat(o.isCanceled()).isTrue()
     );
   }
-
-
 
   @Test
   void shouldChangeItemQuantity() {

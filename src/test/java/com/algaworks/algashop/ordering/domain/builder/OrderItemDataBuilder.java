@@ -1,6 +1,5 @@
 package com.algaworks.algashop.ordering.domain.builder;
 
-import com.algaworks.algashop.ordering.domain.entity.Order;
 import com.algaworks.algashop.ordering.domain.entity.OrderItem;
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
@@ -36,24 +35,33 @@ public class OrderItemDataBuilder {
   private Supplier<Product> product = () -> customFaker.valueObject().product();
 
   @With
-  private Supplier<Quantity> quantity = () -> customFaker.valueObject().quantity(1, 10);
+  private Supplier<Quantity> quantity = () -> customFaker.valueObject().quantity(1, 9);
 
   @With
-  private Supplier<Money> totalAmount = () -> customFaker.valueObject().money();
+  private Supplier<Money> totalAmount = () -> customFaker.valueObject().money(1, 100);
 
   public static OrderItemDataBuilder builder() {
     return new OrderItemDataBuilder();
   }
-  
-  public OrderItem buildNew() {
-    return OrderItem.buildNew()
-      .orderId(orderId.get())
-      .product(product.get())
-      .quantity(quantity.get())
+
+  public static OrderItemDataBuilder builder(OrderItem orderItem) {
+    Product product = Product.builder()
+      .id(orderItem.productId())
+      .name(orderItem.productName())
+      .price(orderItem.price())
+      .inStock(true)
       .build();
+
+    return new OrderItemDataBuilder(
+      orderItem::id,
+      orderItem::orderId,
+      () -> product,
+      orderItem::quantity,
+      orderItem::totalAmount
+    );
   }
 
-  public OrderItem buildExisting() {
+  public OrderItem build() {
     return OrderItem.buildExisting()
       .id(id.get())
       .orderId(orderId.get())
@@ -63,8 +71,8 @@ public class OrderItemDataBuilder {
       .build();
   }
 
-  public Set<OrderItem> buildExistingList(final int amount){
-    return Stream.generate(() -> OrderItemDataBuilder.builder().buildExisting())
+  public Set<OrderItem> buildList(final int amount){
+    return Stream.generate(() -> OrderItemDataBuilder.builder().build())
       .limit(amount)
       .collect(Collectors.toSet());
   }

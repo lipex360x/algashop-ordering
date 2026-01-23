@@ -74,7 +74,7 @@ public class OrderDraftTest {
 
     OrderItem orderItem = OrderItemDataBuilder.builder()
       .withOrderId(order::id)
-      .buildExisting();
+      .build();
 
     ThrowableAssert.ThrowingCallable changeItemQuantityTask =
       () -> order.changeItemQuantity(orderItem.id(), new Quantity(5));

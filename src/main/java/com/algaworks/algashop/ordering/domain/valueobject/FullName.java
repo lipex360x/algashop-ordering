@@ -1,6 +1,7 @@
 package com.algaworks.algashop.ordering.domain.valueobject;
 
 import com.algaworks.algashop.ordering.domain.exception.ErrorMessages;
+import org.springframework.lang.NonNull;
 
 import java.util.Objects;
 
@@ -18,6 +19,7 @@ public record FullName(String firstName, String lastName) {
   }
 
   @Override
+  @NonNull
   public String toString() {
     return  firstName + ' ' + lastName;
   }
