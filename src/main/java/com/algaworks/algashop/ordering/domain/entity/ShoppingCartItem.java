@@ -1,6 +1,7 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
-import com.algaworks.algashop.ordering.domain.exception.ShoppingCartInvalidItemQuantityException;
+import com.algaworks.algashop.ordering.domain.exception.ShoppingCartItemIncompatibleProductException;
+import com.algaworks.algashop.ordering.domain.exception.ShoppingCartItemInvalidQuantityException;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.Product;
 import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
@@ -101,8 +102,17 @@ public class ShoppingCartItem {
   }
 
   void changeQuantity(Quantity quantity) {
-    if (quantity.value() <= 0) throw new ShoppingCartInvalidItemQuantityException(this.id());
+    if (quantity.value() <= 0) throw new ShoppingCartItemInvalidQuantityException(this.id());
     this.setQuantity(quantity);
+    this.recalculateTotals();
+  }
+
+  void refresh(@NonNull Product product) {
+    if (!product.id().equals(this.productId()))
+      throw new ShoppingCartItemIncompatibleProductException(this.id(), this.productId());
+    this.setPrice(product.price());
+    this.setAvailable(product.inStock());
+    this.setProductName(product.name());
     this.recalculateTotals();
   }
 
@@ -137,4 +147,6 @@ public class ShoppingCartItem {
   private void setAvailable(@NonNull Boolean available) {
     this.available = available;
   }
+
+
 }

@@ -4,7 +4,6 @@ import com.algaworks.algashop.ordering.domain.exception.ProductOutOfStockExcepti
 import com.algaworks.algashop.ordering.domain.validator.annotation.NonBlank;
 import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 @Builder

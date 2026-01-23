@@ -74,4 +74,7 @@ public class ErrorMessages {
 
   public static final String VALIDATION_SHOPPING_CART_ITEM_QUANTITY
     = "Shopping Cart Item %s - quantity cannot be zero or negative";
+
+  public static final String ERROR_SHOPPING_CART_ITEM_INCOMPATIBLE_PRODUCT
+    = "Shopping Cart %s cannot be updated, incompatible product %s";
 }

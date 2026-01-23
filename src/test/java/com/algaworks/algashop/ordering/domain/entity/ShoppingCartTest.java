@@ -2,14 +2,19 @@ package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.builder.ProductDataBuilder;
 import com.algaworks.algashop.ordering.domain.builder.ShoppingCartDataBuilder;
+import com.algaworks.algashop.ordering.domain.exception.ProductOutOfStockException;
+import com.algaworks.algashop.ordering.domain.exception.ShoppingCartDoesNotContainShoppingCartItemException;
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.Product;
+import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertWith;
 
 class ShoppingCartTest {
@@ -82,6 +87,78 @@ class ShoppingCartTest {
       s -> assertThat(s.totalItems()).isEqualTo(new Quantity(2)),
       s -> assertThat(s.items()).hasSize(1)
     );
+  }
+
+  @Test
+  void shouldAddShoppingCartItemWithSameProducts() {
+    ShoppingCart shoppingCartDraft = ShoppingCart.startShopping(new CustomerId());
+
+    ShoppingCart shoppingCart = ShoppingCartDataBuilder.builder(shoppingCartDraft).build();
+
+    Product product = ProductDataBuilder.builder()
+      .withPrice(() -> new Money("10"))
+      .build();
+
+    shoppingCart.addItem(product, new Quantity(2));
+    shoppingCart.addItem(product, new Quantity(2));
+    shoppingCart.addItem(product, new Quantity(2));
+
+    assertWith(shoppingCart,
+      s -> assertThat(s.id()).isNotNull(),
+      s -> assertThat(s.customerId()).isNotNull(),
+      s -> assertThat(s.totalAmount()).isEqualTo(new Money("60")),
+      s -> assertThat(s.totalItems()).isEqualTo(new Quantity(6)),
+      s -> assertThat(s.items()).hasSize(1)
+    );
+  }
+
+  @Test
+  void shouldAddShoppingCartItemWithDifferentProducts() {
+    ShoppingCart shoppingCartDraft = ShoppingCart.startShopping(new CustomerId());
+
+    ShoppingCart shoppingCart = ShoppingCartDataBuilder.builder(shoppingCartDraft).build();
+
+    Product product1 = ProductDataBuilder.builder()
+      .withPrice(() -> new Money("20"))
+      .build();
+
+    Product product2 = ProductDataBuilder.builder()
+      .withPrice(() -> new Money("40"))
+      .build();
+
+    Product product3 = ProductDataBuilder.builder()
+      .withPrice(() -> new Money("60"))
+      .build();
+
+    shoppingCart.addItem(product1, new Quantity(1));
+    shoppingCart.addItem(product2, new Quantity(1));
+    shoppingCart.addItem(product3, new Quantity(1));
+
+    assertWith(shoppingCart,
+      s -> assertThat(s.id()).isNotNull(),
+      s -> assertThat(s.customerId()).isNotNull(),
+      s -> assertThat(s.totalAmount()).isEqualTo(new Money("120")),
+      s -> assertThat(s.totalItems()).isEqualTo(new Quantity(3)),
+      s -> assertThat(s.items()).hasSize(3)
+    );
+  }
+
+  @Test
+  void shouldThrowExceptionWhenAddShoppingCartItemWithProductOutOfStock() {
+    ShoppingCart shoppingCartDraft = ShoppingCart.startShopping(new CustomerId());
+
+    ShoppingCart shoppingCart = ShoppingCartDataBuilder.builder(shoppingCartDraft).build();
+
+    Product product = ProductDataBuilder.builder()
+      .withPrice(() -> new Money("10"))
+      .withInStock(() -> false)
+      .build();
+
+    ThrowableAssert.ThrowingCallable changeShoppingCartItemProductTask =
+      () -> shoppingCart.addItem(product, new Quantity(2));
+
+    assertThatExceptionOfType(ProductOutOfStockException.class)
+      .isThrownBy(changeShoppingCartItemProductTask);
   }
 
   @Test
@@ -208,22 +285,71 @@ class ShoppingCartTest {
   }
 
   @Test
-  void shouldReturnTrueIfHasUnavailableItem() {
+  void shouldUpdateShoppingCartItemProduct() {
     ShoppingCart shoppingCartDraft = ShoppingCart.startShopping(new CustomerId());
 
     ShoppingCart shoppingCart = ShoppingCartDataBuilder.builder(shoppingCartDraft).build();
 
-    Product product1 = ProductDataBuilder.builder().build();
-    Product product2 = ProductDataBuilder.builder().build();
-    Product product3 = ProductDataBuilder.builder().withInStock(() -> false).build();
+    Product product = ProductDataBuilder.builder()
+      .withName(() -> new ProductName("Product 1"))
+      .withPrice(() -> new Money("10"))
+      .build();
 
-    shoppingCart.addItem(product1, customFaker.valueObject().quantity(1, 9));
-    shoppingCart.addItem(product2, customFaker.valueObject().quantity(1, 9));
-    shoppingCart.addItem(product3, customFaker.valueObject().quantity(1, 9));
+    shoppingCart.addItem(product, new Quantity(2));
 
-    Boolean hasUnavailableItems = shoppingCart.containsUnavailableItems();
+    ShoppingCartItem shoppingCartItem = shoppingCart.findItemOrFail(product.id());
 
-    assertThat(hasUnavailableItems).isTrue();
+    assertWith(shoppingCartItem,
+      s -> assertThat(s.productId()).isEqualTo(product.id()),
+      s -> assertThat(s.productName()).isEqualTo(new ProductName("Product 1")),
+      s -> assertThat(s.totalAmount()).isEqualTo(new Money("20"))
+    );
+
+    Product updatedProduct = ProductDataBuilder.builder(product)
+      .withName(() -> new ProductName("New Product 1"))
+      .withPrice(() -> new Money("50"))
+      .build();
+
+    shoppingCart.refreshItem(updatedProduct);
+
+    assertWith(shoppingCartItem,
+      s -> assertThat(s.productId()).isEqualTo(product.id()),
+      s -> assertThat(s.productName()).isEqualTo(new ProductName("New Product 1")),
+      s -> assertThat(s.totalAmount()).isEqualTo(new Money("100"))
+    );
+  }
+
+  @Test
+  void shouldThrowExceptionWhenUpdateShoppingCartItemWithInvalidProduct() {
+    ShoppingCart shoppingCartDraft = ShoppingCart.startShopping(new CustomerId());
+
+    ShoppingCart shoppingCart = ShoppingCartDataBuilder.builder(shoppingCartDraft).build();
+
+    Product product = ProductDataBuilder.builder()
+      .withName(() -> new ProductName("Product 1"))
+      .withPrice(() -> new Money("10"))
+      .build();
+
+    shoppingCart.addItem(product, new Quantity(2));
+
+    ShoppingCartItem shoppingCartItem = shoppingCart.findItemOrFail(product.id());
+
+    assertWith(shoppingCartItem,
+      s -> assertThat(s.productId()).isEqualTo(product.id()),
+      s -> assertThat(s.productName()).isEqualTo(new ProductName("Product 1")),
+      s -> assertThat(s.totalAmount()).isEqualTo(new Money("20"))
+    );
+
+    Product updatedProduct = ProductDataBuilder.builder()
+      .withName(() -> new ProductName("New Product 1"))
+      .withPrice(() -> new Money("50"))
+      .build();
+
+    ThrowableAssert.ThrowingCallable changeShoppingCartItemProductTask =
+      () -> shoppingCart.refreshItem(updatedProduct);
+
+    assertThatExceptionOfType(ShoppingCartDoesNotContainShoppingCartItemException.class)
+      .isThrownBy(changeShoppingCartItemProductTask);
   }
 
 }
