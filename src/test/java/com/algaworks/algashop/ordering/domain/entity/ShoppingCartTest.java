@@ -7,7 +7,6 @@ import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.Product;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
-import com.algaworks.algashop.ordering.domain.valueobject.id.ShoppingCartItemId;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -132,6 +131,51 @@ class ShoppingCartTest {
       s -> assertThat(s.totalItems()).isEqualTo(Quantity.ZERO),
       s -> assertThat(s.items()).isEmpty()
     );
+  }
+
+  @Test
+  void shouldFindShoppingCartItemByProductId() {
+    ShoppingCart shoppingCartDraft = ShoppingCart.startShopping(new CustomerId());
+
+    ShoppingCart shoppingCart = ShoppingCartDataBuilder.builder(shoppingCartDraft).build();
+
+    Product product1 = ProductDataBuilder.builder().build();
+    Product product2 = ProductDataBuilder.builder().build();
+    Product product3 = ProductDataBuilder.builder().build();
+
+    shoppingCart.addItem(product1, customFaker.valueObject().quantity(1, 9));
+    shoppingCart.addItem(product2, customFaker.valueObject().quantity(1, 9));
+    shoppingCart.addItem(product3, customFaker.valueObject().quantity(1, 9));
+
+    ShoppingCartItem shoppingCartItem = shoppingCart.findItemOrFail(product1.id());
+
+    assertThat(shoppingCartItem).isNotNull();
+    assertThat(shoppingCartItem.productId()).isEqualTo(product1.id());
+  }
+
+  @Test
+  void shouldFindShoppingCartItemByShoppingCartItemId() {
+    ShoppingCart shoppingCartDraft = ShoppingCart.startShopping(new CustomerId());
+
+    ShoppingCart shoppingCart = ShoppingCartDataBuilder.builder(shoppingCartDraft).build();
+
+    Product product1 = ProductDataBuilder.builder().build();
+    Product product2 = ProductDataBuilder.builder().build();
+    Product product3 = ProductDataBuilder.builder().build();
+
+    shoppingCart.addItem(product1, customFaker.valueObject().quantity(1, 9));
+    shoppingCart.addItem(product2, customFaker.valueObject().quantity(1, 9));
+    shoppingCart.addItem(product3, customFaker.valueObject().quantity(1, 9));
+
+    ShoppingCartItem getShoppingCart = shoppingCart.items().stream()
+      .filter(i -> i.productId().equals(product2.id()))
+      .findFirst()
+      .orElseThrow();
+
+    ShoppingCartItem shoppingCartItem = shoppingCart.findItemOrFail(getShoppingCart.id());
+
+    assertThat(shoppingCartItem).isNotNull();
+    assertThat(shoppingCartItem.productId()).isEqualTo(product2.id());
   }
 
 }

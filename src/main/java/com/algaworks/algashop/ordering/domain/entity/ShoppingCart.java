@@ -5,6 +5,7 @@ import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.Product;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
+import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.ShoppingCartId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.ShoppingCartItemId;
 import lombok.Builder;
@@ -115,11 +116,18 @@ public class ShoppingCart {
     return Collections.unmodifiableSet(items);
   }
 
-  private ShoppingCartItem findItemOrFail(ShoppingCartItemId itemId) {
+  public ShoppingCartItem findItemOrFail(ShoppingCartItemId itemId) {
     return this.items().stream()
       .filter(i -> i.id().equals(itemId))
       .findFirst()
-      .orElseThrow(() -> new ShoppingCartDoesNotContainShoppingCartItemException(this.id(), itemId));
+      .orElseThrow(() -> ShoppingCartDoesNotContainShoppingCartItemException.noItemByItemId(this.id(), itemId));
+  }
+
+  public ShoppingCartItem findItemOrFail(ProductId productId) {
+    return this.items().stream()
+      .filter(i -> i.productId().equals(productId))
+      .findFirst()
+      .orElseThrow(() -> ShoppingCartDoesNotContainShoppingCartItemException.noItemByProductId(this.id(), productId));
   }
 
   private void recalculateTotals() {

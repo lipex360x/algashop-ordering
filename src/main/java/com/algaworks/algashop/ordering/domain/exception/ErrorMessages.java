@@ -66,7 +66,10 @@ public class ErrorMessages {
   public static final String ERROR_ORDER_CANNOT_BE_EDITED
     = "Order %s with status %s cannot be edited";
 
-  public static final String ERROR_SHOPPING_CART_ITEM_NOT_FOUND
+  public static final String ERROR_SHOPPING_CART_ITEM_NOT_FOUND_BY_ITEM_ID
     = "Shopping Cart ID: %s - Item ID %s not found";
+
+  public static final String ERROR_SHOPPING_CART_ITEM_NOT_FOUND_BY_PRODUCT_ID
+    = "Shopping Cart ID: %s - Product ID %s not found";
 
 }
