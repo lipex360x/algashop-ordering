@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
+import com.algaworks.algashop.ordering.domain.exception.ShoppingCartInvalidItemQuantityException;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.Product;
 import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
@@ -99,6 +100,11 @@ public class ShoppingCartItem {
     this.setTotalAmount(this.price.multiply(this.quantity()));
   }
 
+  void changeQuantity(Quantity quantity) {
+    if (quantity.value() <= 0) throw new ShoppingCartInvalidItemQuantityException(this.id());
+    this.setQuantity(quantity);
+    this.recalculateTotals();
+  }
 
   private void setId(@NonNull ShoppingCartItemId id) {
     this.id = id;

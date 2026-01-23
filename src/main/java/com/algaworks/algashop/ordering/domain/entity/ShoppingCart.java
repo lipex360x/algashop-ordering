@@ -1,6 +1,7 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.exception.ShoppingCartDoesNotContainShoppingCartItemException;
+import com.algaworks.algashop.ordering.domain.exception.ShoppingCartInvalidItemQuantityException;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.Product;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
@@ -89,6 +90,15 @@ public class ShoppingCart {
 
   public void empty() {
     this.items.clear();
+    this.recalculateTotals();
+  }
+
+  public void changeItemQuantity(
+    @NonNull ShoppingCartItemId shoppingCartItemId,
+    @NonNull Quantity quantity
+  ) {
+    ShoppingCartItem shoppingCartItem = this.findItemOrFail(shoppingCartItemId);
+    shoppingCartItem.changeQuantity(quantity);
     this.recalculateTotals();
   }
 

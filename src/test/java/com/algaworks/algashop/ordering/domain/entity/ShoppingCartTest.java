@@ -178,4 +178,33 @@ class ShoppingCartTest {
     assertThat(shoppingCartItem.productId()).isEqualTo(product2.id());
   }
 
+  @Test
+  void shouldChangeShoppingCartItemQuantity() {
+    ShoppingCart shoppingCartDraft = ShoppingCart.startShopping(new CustomerId());
+
+    ShoppingCart shoppingCart = ShoppingCartDataBuilder.builder(shoppingCartDraft).build();
+
+    Product product = ProductDataBuilder.builder()
+      .withPrice(() -> new Money("10"))
+      .build();
+
+    shoppingCart.addItem(product, new Quantity(2));
+
+    ShoppingCartItem shoppingCartItem = shoppingCart.findItemOrFail(product.id());
+
+    assertThat(shoppingCartItem.quantity()).isEqualTo(new Quantity(2));
+
+    assertWith(shoppingCartItem,
+      s -> assertThat(s.quantity()).isEqualTo(new Quantity(2)),
+      s -> assertThat(s.totalAmount()).isEqualTo(new Money("20"))
+    );
+
+    shoppingCart.changeItemQuantity(shoppingCartItem.id(), new Quantity(5));
+
+    assertWith(shoppingCartItem,
+      s -> assertThat(s.quantity()).isEqualTo(new Quantity(5)),
+      s -> assertThat(s.totalAmount()).isEqualTo(new Money("50"))
+    );
+  }
+
 }
