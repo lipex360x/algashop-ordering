@@ -69,8 +69,6 @@ public class ShoppingCart {
     @NonNull Product product,
     @NonNull Quantity quantity
   ) {
-    product.checkOutOfStock();
-
     ShoppingCartItem shoppingCartItem = ShoppingCartItem.buildNew()
       .shoppingCartId(this.id())
       .product(product)
@@ -138,6 +136,10 @@ public class ShoppingCart {
       .filter(i -> i.productId().equals(productId))
       .findFirst()
       .orElseThrow(() -> ShoppingCartDoesNotContainShoppingCartItemException.noItemByProductId(this.id(), productId));
+  }
+
+  public Boolean containsUnavailableItems() {
+    return this.items().stream().anyMatch(i -> !i.isAvailable());
   }
 
   private void recalculateTotals() {

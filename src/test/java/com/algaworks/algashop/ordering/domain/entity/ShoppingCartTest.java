@@ -207,4 +207,23 @@ class ShoppingCartTest {
     );
   }
 
+  @Test
+  void shouldReturnTrueIfHasUnavailableItem() {
+    ShoppingCart shoppingCartDraft = ShoppingCart.startShopping(new CustomerId());
+
+    ShoppingCart shoppingCart = ShoppingCartDataBuilder.builder(shoppingCartDraft).build();
+
+    Product product1 = ProductDataBuilder.builder().build();
+    Product product2 = ProductDataBuilder.builder().build();
+    Product product3 = ProductDataBuilder.builder().withInStock(() -> false).build();
+
+    shoppingCart.addItem(product1, customFaker.valueObject().quantity(1, 9));
+    shoppingCart.addItem(product2, customFaker.valueObject().quantity(1, 9));
+    shoppingCart.addItem(product3, customFaker.valueObject().quantity(1, 9));
+
+    Boolean hasUnavailableItems = shoppingCart.containsUnavailableItems();
+
+    assertThat(hasUnavailableItems).isTrue();
+  }
+
 }

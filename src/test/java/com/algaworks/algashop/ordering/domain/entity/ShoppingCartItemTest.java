@@ -28,7 +28,7 @@ class ShoppingCartItemTest {
       s -> assertThat(s.price()).isNotEqualTo(Money.ZERO),
       s -> assertThat(s.quantity()).isNotEqualTo(Quantity.ZERO),
       s -> assertThat(s.totalAmount()).isNotEqualTo(Money.ZERO),
-      s -> assertThat(s.available()).isNotNull()
+      s -> assertThat(s.isAvailable()).isNotNull()
     );
   }
   @Test
@@ -42,7 +42,7 @@ class ShoppingCartItemTest {
       s -> assertThat(s.price()).isNotEqualTo(Money.ZERO),
       s -> assertThat(s.quantity()).isNotEqualTo(Quantity.ZERO),
       s -> assertThat(s.totalAmount()).isNotEqualTo(Money.ZERO),
-      s -> assertThat(s.available()).isNotNull()
+      s -> assertThat(s.isAvailable()).isNotNull()
     );
   }
 
