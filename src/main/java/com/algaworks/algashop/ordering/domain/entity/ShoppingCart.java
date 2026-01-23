@@ -81,6 +81,11 @@ public class ShoppingCart {
     this.recalculateTotals();
   }
 
+  public void removeItem(@NonNull ShoppingCartItemId itemId) {
+    ShoppingCartItem shoppingCartItem = findItemOrFail(itemId);
+    this.items.remove(shoppingCartItem);
+  }
+
   public void empty() {
     this.items.clear();
     this.recalculateTotals();
@@ -129,7 +134,6 @@ public class ShoppingCart {
       .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     this.setTotalAmount(new Money(totalItemsAmountReduced));
-
   }
 
   private void setId(@NonNull ShoppingCartId id) {
