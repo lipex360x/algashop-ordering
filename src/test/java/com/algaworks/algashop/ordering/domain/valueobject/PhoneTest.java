@@ -1,6 +1,7 @@
 package com.algaworks.algashop.ordering.domain.valueobject;
 
-import com.algaworks.algashop.ordering.domain.exception.ErrorMessages;
+import com.algaworks.algashop.ordering.domain.model.exception.ErrorMessages;
+import com.algaworks.algashop.ordering.domain.model.valueobject.Phone;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

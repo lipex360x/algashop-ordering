@@ -1,15 +1,15 @@
 package com.algaworks.algashop.ordering.domain.builder;
 
-import com.algaworks.algashop.ordering.domain.entity.Customer;
+import com.algaworks.algashop.ordering.domain.model.entity.Customer;
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
-import com.algaworks.algashop.ordering.domain.valueobject.Address;
-import com.algaworks.algashop.ordering.domain.valueobject.BirthDate;
-import com.algaworks.algashop.ordering.domain.valueobject.Document;
-import com.algaworks.algashop.ordering.domain.valueobject.Email;
-import com.algaworks.algashop.ordering.domain.valueobject.FullName;
-import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
-import com.algaworks.algashop.ordering.domain.valueobject.Phone;
-import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
+import com.algaworks.algashop.ordering.domain.model.valueobject.Address;
+import com.algaworks.algashop.ordering.domain.model.valueobject.BirthDate;
+import com.algaworks.algashop.ordering.domain.model.valueobject.Document;
+import com.algaworks.algashop.ordering.domain.model.valueobject.Email;
+import com.algaworks.algashop.ordering.domain.model.valueobject.FullName;
+import com.algaworks.algashop.ordering.domain.model.valueobject.LoyaltyPoints;
+import com.algaworks.algashop.ordering.domain.model.valueobject.Phone;
+import com.algaworks.algashop.ordering.domain.model.valueobject.id.CustomerId;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.With;

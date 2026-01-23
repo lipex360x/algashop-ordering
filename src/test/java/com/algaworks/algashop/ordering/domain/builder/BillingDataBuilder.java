@@ -1,10 +1,10 @@
 package com.algaworks.algashop.ordering.domain.builder;
 
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
-import com.algaworks.algashop.ordering.domain.valueobject.Address;
-import com.algaworks.algashop.ordering.domain.valueobject.Billing;
-import com.algaworks.algashop.ordering.domain.valueobject.Email;
-import com.algaworks.algashop.ordering.domain.valueobject.Recipient;
+import com.algaworks.algashop.ordering.domain.model.valueobject.Address;
+import com.algaworks.algashop.ordering.domain.model.valueobject.Billing;
+import com.algaworks.algashop.ordering.domain.model.valueobject.Email;
+import com.algaworks.algashop.ordering.domain.model.valueobject.Recipient;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.With;

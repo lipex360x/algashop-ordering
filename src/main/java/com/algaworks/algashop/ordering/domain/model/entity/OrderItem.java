@@ -1,0 +1,129 @@
+package com.algaworks.algashop.ordering.domain.model.entity;
+
+import com.algaworks.algashop.ordering.domain.model.valueobject.Money;
+import com.algaworks.algashop.ordering.domain.model.valueobject.Product;
+import com.algaworks.algashop.ordering.domain.model.valueobject.ProductName;
+import com.algaworks.algashop.ordering.domain.model.valueobject.Quantity;
+import com.algaworks.algashop.ordering.domain.model.valueobject.id.OrderId;
+import com.algaworks.algashop.ordering.domain.model.valueobject.id.OrderItemId;
+import com.algaworks.algashop.ordering.domain.model.valueobject.id.ProductId;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class OrderItem {
+
+  @EqualsAndHashCode.Include
+  private OrderItemId id;
+  private OrderId orderId;
+
+  private ProductId productId;
+  private ProductName productName;
+
+  private Money price;
+  private Quantity quantity;
+
+  private Money totalAmount;
+
+  @Builder(builderClassName = "ExistingOrderItemBuilder", builderMethodName = "buildExisting")
+  public OrderItem(
+    @NonNull OrderItemId id,
+    @NonNull OrderId orderId,
+    @NonNull Product product,
+    @NonNull Quantity quantity,
+    @NonNull Money totalAmount
+  ) {
+    this.setId(id);
+    this.setOrderId(orderId);
+    this.setProductId(product.id());
+    this.setProductName(product.name());
+    this.setPrice(product.price());
+    this.setQuantity(quantity);
+    this.setTotalAmount(totalAmount);
+  }
+
+  @Builder(builderClassName = "BrandNewOrderItemBuilder", builderMethodName = "buildNew")
+  private static OrderItem createBrandNew(
+    @NonNull OrderId orderId,
+    @NonNull Product product,
+    @NonNull Quantity quantity
+  ) {
+    OrderItem orderItem = new OrderItem(
+      new OrderItemId(),
+      orderId,
+      product,
+      quantity,
+      Money.ZERO
+    );
+
+    orderItem.recalculateTotals();
+    return orderItem;
+  }
+
+  void changeQuantity(@NonNull Quantity quantity) {
+    this.setQuantity(quantity);
+    this.recalculateTotals();
+  }
+
+  public OrderItemId id() {
+    return id;
+  }
+
+  public OrderId orderId() {
+    return orderId;
+  }
+
+  public ProductId productId() {
+    return productId;
+  }
+
+  public ProductName productName() {
+    return productName;
+  }
+
+  public Money price() {
+    return price;
+  }
+
+  public Quantity quantity() {
+    return quantity;
+  }
+
+  public Money totalAmount() {
+    return totalAmount;
+  }
+
+  private void recalculateTotals() {
+    this.setTotalAmount(this.price().multiply(this.quantity()));
+  }
+
+  private void setId(@NonNull OrderItemId id) {
+    this.id = id;
+  }
+
+  private void setOrderId(@NonNull OrderId orderId) {
+    this.orderId = orderId;
+  }
+
+  private void setProductId(@NonNull ProductId productId) {
+    this.productId = productId;
+  }
+
+  private void setProductName(@NonNull ProductName productName) {
+    this.productName = productName;
+  }
+
+  private void setPrice(@NonNull Money price) {
+    this.price = price;
+  }
+
+  private void setQuantity(@NonNull Quantity quantity) {
+    this.quantity = quantity;
+  }
+
+  private void setTotalAmount(@NonNull Money totalAmount) {
+    this.totalAmount = totalAmount;
+  }
+
+}
