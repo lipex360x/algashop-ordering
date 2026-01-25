@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Order {
+public class Order implements AggregateRoot<OrderId> {
 
   @EqualsAndHashCode.Include
   private OrderId id;

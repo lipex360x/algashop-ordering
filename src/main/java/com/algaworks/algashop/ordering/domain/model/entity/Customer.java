@@ -15,9 +15,7 @@ import lombok.Builder;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
-import static com.algaworks.algashop.ordering.domain.model.exception.ErrorMessages.VALIDATION_ERROR_FULL_NAME_IS_NULL;
-
-public class Customer {
+public class Customer implements AggregateRoot<CustomerId> {
   private CustomerId id;
   private FullName fullName;
   private BirthDate birthDate;

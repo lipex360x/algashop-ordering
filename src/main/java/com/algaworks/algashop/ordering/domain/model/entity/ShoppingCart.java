@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class ShoppingCart {
+public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
 
   @EqualsAndHashCode.Include
   private ShoppingCartId id;
