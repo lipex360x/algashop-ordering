@@ -38,7 +38,7 @@ public class OrderPersistenceEntity {
 
   private OffsetDateTime placedAt;
   private OffsetDateTime paidAt;
-  private OffsetDateTime canceledAt;
+  private OffsetDateTime cancelledAt;
   private OffsetDateTime readyAt;
 
 }
