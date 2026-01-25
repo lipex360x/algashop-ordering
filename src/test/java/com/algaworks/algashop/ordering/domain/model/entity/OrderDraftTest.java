@@ -91,7 +91,7 @@ public class OrderDraftTest {
       .build();
 
     ThrowableAssert.ThrowingCallable changePaymentMethodTask =
-      () -> order.changePaymentMethod(PaymentMethod.CREDIT_CARD);
+      () -> order.changePaymentMethod(PaymentMethod.CREDIT_CART);
 
     assertThatExceptionOfType(OrderCannotBeEditedException.class)
       .isThrownBy(changePaymentMethodTask)

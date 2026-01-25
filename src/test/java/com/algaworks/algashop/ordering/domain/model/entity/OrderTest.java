@@ -199,9 +199,9 @@ class OrderTest {
 
     assertThat(order.paymentMethod()).isNull();
 
-    order.changePaymentMethod(PaymentMethod.CREDIT_CARD);
+    order.changePaymentMethod(PaymentMethod.CREDIT_CART);
 
-    assertThat(order.paymentMethod()).isEqualTo(PaymentMethod.CREDIT_CARD);
+    assertThat(order.paymentMethod()).isEqualTo(PaymentMethod.CREDIT_CART);
   }
 
   @Test
