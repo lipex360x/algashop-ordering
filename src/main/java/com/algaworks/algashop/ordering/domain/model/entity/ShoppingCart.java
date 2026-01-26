@@ -113,6 +113,7 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
   public void removeItem(@NonNull ShoppingCartItemId itemId) {
     ShoppingCartItem shoppingCartItem = findItemOrFail(itemId);
     this.items.remove(shoppingCartItem);
+    this.recalculateTotals();
   }
 
   public void empty() {
@@ -157,6 +158,10 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
 
   public Set<ShoppingCartItem> items() {
     return Collections.unmodifiableSet(items);
+  }
+
+  public boolean isEmpty() {
+    return this.items().isEmpty();
   }
 
   public ShoppingCartItem findItemOrFail(ShoppingCartItemId itemId) {

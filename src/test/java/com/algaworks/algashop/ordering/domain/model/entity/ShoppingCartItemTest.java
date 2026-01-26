@@ -4,6 +4,7 @@ import com.algaworks.algashop.ordering.domain.builder.ProductDataBuilder;
 import com.algaworks.algashop.ordering.domain.builder.ShoppingCartItemDataBuilder;
 import com.algaworks.algashop.ordering.domain.model.exception.ShoppingCartItemIncompatibleProductException;
 import com.algaworks.algashop.ordering.domain.model.exception.ShoppingCartItemInvalidQuantityException;
+import com.algaworks.algashop.ordering.domain.model.valueobject.id.ShoppingCartItemId;
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
 import com.algaworks.algashop.ordering.domain.model.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.model.valueobject.Product;
@@ -133,6 +134,31 @@ class ShoppingCartItemTest {
 
     assertThatExceptionOfType(ShoppingCartItemIncompatibleProductException.class)
       .isThrownBy(changeShoppingCartItemProductTask);
+  }
+
+  @Test
+  void shouldVerifyIfItemsAreEquals() {
+    ShoppingCartItemId shoppingCartItemId = new ShoppingCartItemId();
+
+    ShoppingCartItem item1 = ShoppingCartItemDataBuilder.builder()
+      .withId(() -> shoppingCartItemId)
+      .build();
+
+    ShoppingCartItem item2 = ShoppingCartItemDataBuilder.builder()
+      .withId(() -> shoppingCartItemId)
+      .build();
+
+    assertThat(item1).isEqualTo(item2);
+    assertThat(item1.hashCode()).hasSameHashCodeAs(item2.hashCode());
+  }
+
+  @Test
+  void shouldVerifyIfItemsAreDifferent() {
+    ShoppingCartItem item1 = ShoppingCartItemDataBuilder.builder().build();
+    ShoppingCartItem item2 = ShoppingCartItemDataBuilder.builder().build();
+
+    assertThat(item1).isNotEqualTo(item2);
+    assertThat(item1.hashCode()).isNotEqualTo(item2.hashCode());
   }
 
 }

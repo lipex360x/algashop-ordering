@@ -4,6 +4,7 @@ import com.algaworks.algashop.ordering.domain.builder.ProductDataBuilder;
 import com.algaworks.algashop.ordering.domain.builder.ShoppingCartDataBuilder;
 import com.algaworks.algashop.ordering.domain.model.exception.ProductOutOfStockException;
 import com.algaworks.algashop.ordering.domain.model.exception.ShoppingCartDoesNotContainShoppingCartItemException;
+import com.algaworks.algashop.ordering.domain.model.valueobject.id.ShoppingCartItemId;
 import com.algaworks.algashop.ordering.domain.utility.CustomFaker;
 import com.algaworks.algashop.ordering.domain.model.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.model.valueobject.Product;
@@ -167,15 +168,24 @@ class ShoppingCartTest {
 
     ShoppingCart shoppingCart = ShoppingCartDataBuilder.builder(shoppingCartDraft).build();
 
-    Product product1 = ProductDataBuilder.builder().build();
-    Product product2 = ProductDataBuilder.builder().build();
-    Product product3 = ProductDataBuilder.builder().build();
+    Product product1 = ProductDataBuilder.builder()
+      .withPrice(() -> new Money("10"))
+      .build();
+    Product product2 = ProductDataBuilder.builder()
+      .withPrice(() -> new Money("20"))
+      .build();
+    Product product3 = ProductDataBuilder.builder()
+      .withPrice(() -> new Money("30"))
+      .build();
 
-    shoppingCart.addItem(product1, customFaker.valueObject().quantity(1, 9));
-    shoppingCart.addItem(product2, customFaker.valueObject().quantity(1, 9));
-    shoppingCart.addItem(product3, customFaker.valueObject().quantity(1, 9));
+    shoppingCart.addItem(product1, customFaker.valueObject().quantity(1));
+    shoppingCart.addItem(product2, customFaker.valueObject().quantity(2));
+    shoppingCart.addItem(product3, customFaker.valueObject().quantity(3));
 
-    assertThat(shoppingCart.items()).hasSize(3);
+    assertThat(shoppingCart).satisfies(
+      s -> assertThat(s.items()).hasSize(3),
+      s -> assertThat(s.totalAmount()).isEqualTo(new Money("140"))
+    );
 
     ShoppingCartItem shoppingCartItem = shoppingCart.items().stream()
       .filter(i -> i.productId().equals(product2.id()))
@@ -184,7 +194,29 @@ class ShoppingCartTest {
 
     shoppingCart.removeItem(shoppingCartItem.id());
 
-    assertThat(shoppingCart.items()).hasSize(2);
+    assertThat(shoppingCart).satisfies(
+      s -> assertThat(s.items()).hasSize(2),
+      s -> assertThat(s.totalAmount()).isEqualTo(new Money("100"))
+    );
+  }
+
+  @Test
+  void shouldThrowExceptionWhenTryToRemoveUnexistentItem() {
+    ShoppingCart shoppingCartDraft = ShoppingCart.startShopping(new CustomerId());
+
+    ShoppingCart shoppingCart = ShoppingCartDataBuilder.builder(shoppingCartDraft).build();
+
+    Product product1 = ProductDataBuilder.builder().build();
+    Product product2 = ProductDataBuilder.builder().build();
+
+    shoppingCart.addItem(product1, customFaker.valueObject().quantity());
+    shoppingCart.addItem(product2, customFaker.valueObject().quantity());
+
+    ThrowableAssert.ThrowingCallable removeItemTask =
+      () -> shoppingCart.removeItem(new ShoppingCartItemId());
+
+    assertThatExceptionOfType(ShoppingCartDoesNotContainShoppingCartItemException.class)
+      .isThrownBy(removeItemTask);
   }
 
   @Test
@@ -350,6 +382,15 @@ class ShoppingCartTest {
 
     assertThatExceptionOfType(ShoppingCartDoesNotContainShoppingCartItemException.class)
       .isThrownBy(changeShoppingCartItemProductTask);
+  }
+
+  @Test
+  void shouldVerifyIfShoppingCartIsEmpty() {
+    ShoppingCart shoppingCart = ShoppingCartDataBuilder.builder().build();
+    assertThat(shoppingCart.isEmpty()).isFalse();
+
+    shoppingCart.empty();
+    assertThat(shoppingCart.isEmpty()).isTrue();
   }
 
 }

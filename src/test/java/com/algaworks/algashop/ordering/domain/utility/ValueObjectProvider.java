@@ -96,18 +96,22 @@ public class ValueObjectProvider extends AbstractProvider<BaseProviders> {
   }
 
   public Money money(){
-    return money(1, Integer.MAX_VALUE);
+    return money(1, faker.number().positive());
   }
 
-  public Money money(final int min, final int max) {
+  public Money money(int min, int max) {
     return new Money(Double.toString(faker.number().randomDouble(2 ,min, max)));
   }
 
   public Quantity quantity(){
-    return quantity(0, Integer.MAX_VALUE);
+    return quantity(1, faker.number().positive());
   }
 
-  public Quantity quantity(final int min, final int max) {
+  public Quantity quantity(int value){
+    return new Quantity(value);
+  }
+
+  public Quantity quantity(int min, int max) {
     return new Quantity(faker.number().numberBetween(min, max));
   }
 
