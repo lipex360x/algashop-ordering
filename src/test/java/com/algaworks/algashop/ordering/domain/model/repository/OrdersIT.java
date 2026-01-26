@@ -2,6 +2,7 @@ package com.algaworks.algashop.ordering.domain.model.repository;
 
 import com.algaworks.algashop.ordering.domain.builder.OrderDataBuilder;
 import com.algaworks.algashop.ordering.domain.model.entity.Order;
+import com.algaworks.algashop.ordering.domain.model.entity.OrderStatus;
 import com.algaworks.algashop.ordering.domain.model.valueobject.id.OrderId;
 import com.algaworks.algashop.ordering.infrastructure.persistence.assembler.OrderPersistenceEntityAssembler;
 import com.algaworks.algashop.ordering.infrastructure.persistence.disassembler.OrderPersistenceEntityDisassembler;
@@ -50,6 +51,22 @@ class OrdersIT {
       s -> assertThat(s.status()).isEqualTo(originalOrder.status()),
       s -> assertThat(s.paymentMethod()).isEqualTo(originalOrder.paymentMethod())
     );
+  }
+
+  @Test
+  void shouldUpdateExistingOrder() {
+    Order order = OrderDataBuilder.builder()
+      .withStatus(() -> OrderStatus.PLACED)
+      .build();
+
+    orders.add(order);
+    orders.ofId(order.id()).orElseThrow();
+
+    order.markAsPaid();
+    orders.add(order);
+    orders.ofId(order.id()).orElseThrow();
+
+    assertThat(order.isPaid()).isTrue();
   }
 
 }
