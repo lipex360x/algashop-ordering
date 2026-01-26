@@ -16,8 +16,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import(SpringDataAuditingConfig.class)
 class OrderPersistenceEntityRepositoryIT {
 
+  private final OrderPersistenceEntityRepository orderPersistenceEntityRepository;
+
   @Autowired
-  private OrderPersistenceEntityRepository orderPersistenceEntityRepository;
+  public OrderPersistenceEntityRepositoryIT(
+    OrderPersistenceEntityRepository orderPersistenceEntityRepository
+  ) {
+    this.orderPersistenceEntityRepository = orderPersistenceEntityRepository;
+  }
 
   @Test
   void shouldPersist() {
