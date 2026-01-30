@@ -13,11 +13,13 @@ import com.algaworks.algashop.ordering.domain.model.valueobject.Shipping;
 import com.algaworks.algashop.ordering.domain.model.valueobject.id.CustomerId;
 import com.algaworks.algashop.ordering.domain.model.valueobject.id.OrderId;
 import com.algaworks.algashop.ordering.domain.model.valueobject.id.OrderItemId;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,14 +30,22 @@ import java.util.Objects;
 import java.util.Set;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Accessors(fluent = true)
+@Setter(AccessLevel.PRIVATE)
+@Getter
 public class Order implements AggregateRoot<OrderId> {
 
   @EqualsAndHashCode.Include
+  @NonNull
   private OrderId id;
 
+  @NonNull
   private CustomerId customerId;
 
+  @NonNull
   private Money totalAmount;
+
+  @NonNull
   private Quantity totalItems;
 
   private OffsetDateTime placedAt;
@@ -46,9 +56,13 @@ public class Order implements AggregateRoot<OrderId> {
   private Billing billing;
   private Shipping shipping;
 
+  @NonNull
   private OrderStatus status;
+
   private PaymentMethod paymentMethod;
 
+  @Getter(AccessLevel.NONE)
+  @NonNull
   private Set<OrderItem> items;
 
   private Long version;
@@ -70,20 +84,20 @@ public class Order implements AggregateRoot<OrderId> {
     Set<OrderItem> items,
     Long version
   ) {
-    this.setId(id);
-    this.setCustomerId(customerId);
-    this.setTotalAmount(totalAmount);
-    this.setTotalItems(totalItems);
-    this.setPlacedAt(placedAt);
-    this.setPaidAt(paidAt);
-    this.setCancelledAt(cancelledAt);
-    this.setReadyAt(readyAt);
-    this.setBilling(billing);
-    this.setShipping(shipping);
-    this.setStatus(status);
-    this.setPaymentMethod(paymentMethod);
-    this.setItems(items);
-    this.setVersion(version);
+    this.id(id);
+    this.customerId(customerId);
+    this.totalAmount(totalAmount);
+    this.totalItems(totalItems);
+    this.placedAt(placedAt);
+    this.paidAt(paidAt);
+    this.cancelledAt(cancelledAt);
+    this.readyAt(readyAt);
+    this.billing(billing);
+    this.shipping(shipping);
+    this.status(status);
+    this.paymentMethod(paymentMethod);
+    this.items(items);
+    this.version(version);
   }
 
   public static Order draft(CustomerId customerId) {
@@ -118,7 +132,6 @@ public class Order implements AggregateRoot<OrderId> {
       .quantity(quantity)
       .build();
 
-    if (Objects.isNull(this.items)) this.items = new HashSet<>();
     this.items.add(orderItem);
     this.recalculateTotals();
   }
@@ -143,39 +156,39 @@ public class Order implements AggregateRoot<OrderId> {
   public void place() {
     this.verifyIfCanChangeToPlaced();
     this.changeStatus(OrderStatus.PLACED);
-    this.setPlacedAt(OffsetDateTime.now());
+    this.placedAt(OffsetDateTime.now());
   }
 
   public void markAsPaid() {
     this.changeStatus(OrderStatus.PAID);
-    this.setPaidAt(OffsetDateTime.now());
+    this.paidAt(OffsetDateTime.now());
   }
 
   public void markAsReady() {
     this.changeStatus(OrderStatus.READY);
-    this.setReadyAt(OffsetDateTime.now());
+    this.readyAt(OffsetDateTime.now());
   }
 
   public void cancel() {
     this.changeStatus(OrderStatus.CANCELLED);
-    this.setCancelledAt(OffsetDateTime.now());
+    this.cancelledAt(OffsetDateTime.now());
   }
 
   public void changePaymentMethod(@NonNull PaymentMethod paymentMethod) {
     this.verifyIfChangeable();
-    this.setPaymentMethod(paymentMethod);
+    this.paymentMethod(paymentMethod);
   }
 
   public void changeBilling(@NonNull Billing billing) {
     this.verifyIfChangeable();
-    this.setBilling(billing);
+    this.billing(billing);
   }
 
   public void changeShipping(@NonNull Shipping shipping) {
     this.verifyIfChangeable();
     if (shipping.expectedDate().isBefore(LocalDate.now()))
       throw new OrderInvalidShippingDeliveryDateException(this.id());
-    this.setShipping(shipping);
+    this.shipping(shipping);
   }
 
   public boolean isDraft() {
@@ -198,82 +211,31 @@ public class Order implements AggregateRoot<OrderId> {
     return OrderStatus.CANCELLED.equals(this.status()) || this.cancelledAt() != null;
   }
 
-  public OrderId id() {
-    return id;
-  }
-
-  public CustomerId customerId() {
-    return customerId;
-  }
-
-  public Money totalAmount() {
-    return totalAmount;
-  }
-
-  public Quantity totalItems() {
-    return totalItems;
-  }
-
-  public OffsetDateTime placedAt() {
-    return placedAt;
-  }
-
-  public OffsetDateTime paidAt() {
-    return paidAt;
-  }
-
-  public OffsetDateTime cancelledAt() {
-    return cancelledAt;
-  }
-
-  public OffsetDateTime readyAt() {
-    return readyAt;
-  }
-
-  public Billing billing() {
-    return billing;
-  }
-
-  public Shipping shipping() {
-    return shipping;
-  }
-
-  public OrderStatus status() {
-    return status;
-  }
-
-  public PaymentMethod paymentMethod() {
-    return paymentMethod;
-  }
-
   public Set<OrderItem> items() {
     return Collections.unmodifiableSet(this.items);
   }
 
-  public Long version() {
-    return version;
-  }
-
   private void recalculateTotals() {
-    BigDecimal totalItemsAmount = this.items().stream().map(i -> i.totalAmount().value())
+    BigDecimal totalItemsAmount = this.items().stream()
+      .map(i -> i.totalAmount().value())
       .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-    Integer totalItemsQuantity = this.items().stream().map(i -> i.quantity().value())
+    Integer totalItemsQuantity = this.items().stream()
+      .map(i -> i.quantity().value())
       .reduce(0, Integer::sum);
 
     BigDecimal moneyShippingCost = Objects.isNull(this.shipping()) ? BigDecimal.ZERO : this.shipping.cost().value();
-
     BigDecimal moneyTotalAmount = totalItemsAmount.add(moneyShippingCost);
 
-    this.setTotalAmount(new Money(moneyTotalAmount));
-    this.setTotalItems(new Quantity(totalItemsQuantity));
+    this.totalAmount(new Money(moneyTotalAmount));
+    this.totalItems(new Quantity(totalItemsQuantity));
   }
 
   private void changeStatus(OrderStatus newStatus) {
     Objects.requireNonNull(newStatus);
     if (this.status.canNotChangeTo(newStatus))
       throw new OrderStatusCannotBeChangedException(this.id(), this.status(), newStatus);
-    this.setStatus(newStatus);
+    this.status(newStatus);
   }
 
   private void verifyIfCanChangeToPlaced() {
@@ -299,61 +261,4 @@ public class Order implements AggregateRoot<OrderId> {
       .findFirst()
       .orElseThrow(() -> new OrderDoesNotContainOrderItemException(this.id(), orderItemId));
   }
-
-  private void setId(@NonNull OrderId id) {
-    this.id = id;
-  }
-
-  private void setCustomerId(@NonNull CustomerId customerId) {
-    this.customerId = customerId;
-  }
-
-  private void setTotalAmount(@NonNull Money totalAmount) {
-    this.totalAmount = totalAmount;
-  }
-
-  private void setTotalItems(@NonNull Quantity totalItems) {
-    this.totalItems = totalItems;
-  }
-
-  private void setPlacedAt(OffsetDateTime placedAt) {
-    this.placedAt = placedAt;
-  }
-
-  private void setPaidAt(OffsetDateTime paidAt) {
-    this.paidAt = paidAt;
-  }
-
-  private void setCancelledAt(OffsetDateTime cancelledAt) {
-    this.cancelledAt = cancelledAt;
-  }
-
-  private void setReadyAt(OffsetDateTime readyAt) {
-    this.readyAt = readyAt;
-  }
-
-  private void setBilling(Billing billing) {
-    this.billing = billing;
-  }
-
-  private void setShipping(Shipping shipping) {
-    this.shipping = shipping;
-  }
-
-  private void setStatus(@NonNull OrderStatus status) {
-    this.status = status;
-  }
-
-  private void setPaymentMethod(PaymentMethod paymentMethod) {
-    this.paymentMethod = paymentMethod;
-  }
-
-  private void setItems(@NonNull Set<OrderItem> items) {
-    this.items = items;
-  }
-
-  public void setVersion(Long version) {
-    this.version = version;
-  }
-
 }
