@@ -15,7 +15,9 @@ import com.algaworks.algashop.ordering.domain.model.valueobject.id.OrderId;
 import com.algaworks.algashop.ordering.domain.model.valueobject.id.OrderItemId;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -49,6 +51,8 @@ public class Order implements AggregateRoot<OrderId> {
 
   private Set<OrderItem> items;
 
+  private Long version;
+
   @Builder(builderClassName = "ExistingOrderBuilder", builderMethodName = "buildExisting")
   public Order(
     OrderId id,
@@ -63,7 +67,8 @@ public class Order implements AggregateRoot<OrderId> {
     Shipping shipping,
     OrderStatus status,
     PaymentMethod paymentMethod,
-    Set<OrderItem> items
+    Set<OrderItem> items,
+    Long version
   ) {
     this.setId(id);
     this.setCustomerId(customerId);
@@ -78,6 +83,7 @@ public class Order implements AggregateRoot<OrderId> {
     this.setStatus(status);
     this.setPaymentMethod(paymentMethod);
     this.setItems(items);
+    this.setVersion(version);
   }
 
   public static Order draft(CustomerId customerId) {
@@ -94,7 +100,8 @@ public class Order implements AggregateRoot<OrderId> {
       null,
       OrderStatus.DRAFT,
       null,
-      new HashSet<>()
+      new HashSet<>(),
+      null
     );
   }
 
@@ -243,6 +250,10 @@ public class Order implements AggregateRoot<OrderId> {
     return Collections.unmodifiableSet(this.items);
   }
 
+  public Long version() {
+    return version;
+  }
+
   private void recalculateTotals() {
     BigDecimal totalItemsAmount = this.items().stream().map(i -> i.totalAmount().value())
       .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -340,4 +351,9 @@ public class Order implements AggregateRoot<OrderId> {
   private void setItems(@NonNull Set<OrderItem> items) {
     this.items = items;
   }
+
+  public void setVersion(Long version) {
+    this.version = version;
+  }
+
 }

@@ -11,10 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @DataJpaTest
 @Import({
@@ -58,15 +60,40 @@ class OrdersIT {
     Order order = OrderDataBuilder.builder()
       .withStatus(() -> OrderStatus.PLACED)
       .build();
-
     orders.add(order);
-    orders.ofId(order.id()).orElseThrow();
 
+    order = orders.ofId(order.id()).orElseThrow();
     order.markAsPaid();
+
     orders.add(order);
-    orders.ofId(order.id()).orElseThrow();
+    order = orders.ofId(order.id()).orElseThrow();
 
     assertThat(order.isPaid()).isTrue();
   }
 
+  @Test
+  void shouldNotAllowStaleUpdate() {
+    Order order = OrderDataBuilder.builder()
+      .withStatus(() -> OrderStatus.PLACED)
+      .withPaidAt(() -> null)
+      .withCanceledAt(() -> null)
+      .build();
+
+    orders.add(order);
+    Order orderT1 = orders.ofId(order.id()).orElseThrow();
+    Order orderT2 = orders.ofId(order.id()).orElseThrow();
+
+    orderT1.markAsPaid();
+    orders.add(orderT1);
+
+    orderT2.cancel();
+
+    assertThatExceptionOfType(ObjectOptimisticLockingFailureException.class)
+      .isThrownBy(() -> orders.add(orderT2));
+
+    Order savedOrder = orders.ofId(order.id()).orElseThrow();
+
+    assertThat(savedOrder.cancelledAt()).isNull();
+    assertThat(savedOrder.paidAt()).isNotNull();
+  }
 }
